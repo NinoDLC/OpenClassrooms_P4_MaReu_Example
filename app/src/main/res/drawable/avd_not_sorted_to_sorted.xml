@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    >
+    <aapt:attr name="android:drawable">
+        <vector
+            android:name="vector"
+            android:width="24dp"
+            android:height="24dp"
+            android:viewportWidth="24"
+            android:viewportHeight="24"
+            >
+            <path
+                android:name="top_bar"
+                android:pathData="M 3 7 L 21 7"
+                android:strokeColor="@color/colorAccent"
+                android:strokeWidth="2"
+                />
+            <path
+                android:name="middle_bar"
+                android:pathData="M 3 12 L 15 12"
+                android:strokeColor="@color/colorAccent"
+                android:strokeWidth="2"
+                />
+            <path
+                android:name="bottom_bar"
+                android:pathData="M 3 17 L 15 17"
+                android:strokeColor="@color/colorAccent"
+                android:strokeWidth="2"
+                android:trimPathEnd="0.5"
+                />
+        </vector>
+    </aapt:attr>
+    <target android:name="top_bar">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="trimPathEnd"
+                android:duration="300"
+                android:valueFrom="0.666"
+                android:valueTo="1"
+                android:valueType="floatType"
+                android:interpolator="@android:interpolator/fast_out_slow_in"
+                />
+        </aapt:attr>
+    </target>
+    <target android:name="bottom_bar">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="trimPathEnd"
+                android:duration="300"
+                android:valueFrom="1"
+                android:valueTo="0.333"
+                android:valueType="floatType"
+                android:interpolator="@android:interpolator/fast_out_slow_in"
+                />
+        </aapt:attr>
+    </target>
+    <target android:name="middle_bar">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:propertyName="trimPathEnd"
+                    android:duration="150"
+                    android:valueFrom="1"
+                    android:valueTo="0.7"
+                    android:valueType="floatType"
+                    android:interpolator="@android:anim/accelerate_interpolator"
+                    />
+                <objectAnimator
+                    android:propertyName="trimPathEnd"
+                    android:startOffset="150"
+                    android:duration="150"
+                    android:valueFrom="0.7"
+                    android:valueTo="1"
+                    android:valueType="floatType"
+                    android:interpolator="@android:anim/decelerate_interpolator"
+                    />
+            </set>
+        </aapt:attr>
+    </target>
+</animated-vector>

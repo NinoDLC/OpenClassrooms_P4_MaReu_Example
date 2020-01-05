@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SortState">
+        <attr name="state_not_sorted" format="boolean" />
+        <attr name="state_sorted" format="boolean" />
+        <attr name="state_invert_sorted" format="boolean" />
+    </declare-styleable>
+</resources>

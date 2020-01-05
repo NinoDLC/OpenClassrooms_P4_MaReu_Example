@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:minWidth="300dp"
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+        android:id="@+id/meeting_sorting_dialog_ll_alphabetical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:id="@+id/meeting_sorting_dialog_iv_alphabetical"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="16dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/asd_sort"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/meeting_sorting_dialog_tv_alphabetical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <TextView
+            android:id="@+id/meeting_sorting_dialog_tv_alphabetical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:gravity="start"
+            android:text="@string/sorting_alphabetic_none"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/meeting_sorting_dialog_iv_alphabetical"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/meeting_sorting_dialog_ll_chronological"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:id="@+id/meeting_sorting_dialog_iv_chronological"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/asd_sort"
+            />
+
+        <TextView
+            android:id="@+id/meeting_sorting_dialog_tv_chronological"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:gravity="start"
+            android:text="@string/sorting_chronological_none"
+            />
+    </LinearLayout>
+</LinearLayout>

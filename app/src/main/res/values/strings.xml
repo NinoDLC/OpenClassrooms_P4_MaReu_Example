@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">Ma Réu</string>
+
+    <string name="peach">Peach</string>
+    <string name="mario">Mario</string>
+    <string name="luigi">Luigi</string>
+    <string name="wario">Wario</string>
+    <string name="link">Link</string>
+    <string name="yoshi">Yoshi</string>
+    <string name="dk">D.K.</string>
+    <string name="mewtwo">Mewtwo</string>
+
+    <string name="meeting_title">%s - %s - %s</string>
+    <string name="content_description_delete">Supprimer</string>
+    <string name="room">Salle :</string>
+    <string name="topic">Sujet de la réunion</string>
+    <string name="participants">Participants</string>
+
+    <string name="select_a_room_error">Sélectionnez une salle</string>
+    <string name="topic_user_input_error">Veuillez renseigner un intitulé de réunion</string>
+    <string name="participants_user_input_error">Veuillez renseigner au moins un participant</string>
+
+    <string name="empty" />
+    <string name="create_meeting_title">Créer une nouvelle réunion</string>
+
+    <string name="filter_room">Filtrer par salle</string>
+    <string name="filter_hour">Filtrer par heure</string>
+
+    <string name="sort">Trier</string>
+    <string name="sorting_alphabetic_none">Tri alphabétique : aucun</string>
+    <string name="sorting_alphabetic_sorted">Tri alphabétique : A-Z</string>
+    <string name="sorting_alphabetic_inverted_sorted">Tri alphabétique : Z-A</string>
+
+    <string name="sorting_chronological_none">Tri par date : aucun</string>
+    <string name="sorting_chronological_sorted">Tri par date : chronologique</string>
+    <string name="sorting_chronological_inverted_sorted">Tri par date : inversé</string>
+</resources>

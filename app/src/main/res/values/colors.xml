@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent40">#80D81B60</color> <!-- 44% transparent -->
+    <color name="red">#F00</color>
+
+    <color name="peach">#ff7f82</color>
+    <color name="mario">#ff0801</color>
+    <color name="luigi">#009300</color>
+    <color name="mewtwo">#8716bd</color>
+    <color name="wario">#cf22c7</color>
+    <color name="link">#006000</color>
+    <color name="yoshi">#579600</color>
+    <color name="dk">#933800</color>
+</resources>
