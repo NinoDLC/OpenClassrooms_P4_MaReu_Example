@@ -2,7 +2,7 @@ package fr.delcey.mareu.ui.create;
 
 import androidx.annotation.Nullable;
 
-class CreateMeetingModel {
+class CreateMeetingViewState {
 
     @Nullable
     private final String topicError;
@@ -12,7 +12,7 @@ class CreateMeetingModel {
 
     private final boolean isRoomErrorVisible;
 
-    public CreateMeetingModel(
+    public CreateMeetingViewState(
         @Nullable String topicError,
         @Nullable String participantsError,
         boolean isRoomErrorVisible

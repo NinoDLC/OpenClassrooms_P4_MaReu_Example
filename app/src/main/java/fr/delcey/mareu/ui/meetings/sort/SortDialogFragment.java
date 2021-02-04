@@ -59,12 +59,9 @@ public class SortDialogFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.meeting_sorting_dialog_fragment, container, false);
 
         ViewGroup layoutAlphabetical = view.findViewById(R.id.meeting_sorting_dialog_ll_alphabetical);
-        layoutAlphabetical.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) {
-                    listener.onAlphabeticSortingClicked();
-                }
+        layoutAlphabetical.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onAlphabeticSortingClicked();
             }
         });
         imageViewAlphabetical = view.findViewById(R.id.meeting_sorting_dialog_iv_alphabetical);
@@ -72,12 +69,9 @@ public class SortDialogFragment extends DialogFragment {
 
 
         ViewGroup layoutChronological = view.findViewById(R.id.meeting_sorting_dialog_ll_chronological);
-        layoutChronological.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) {
-                    listener.onChronologicalSortingClicked();
-                }
+        layoutChronological.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onChronologicalSortingClicked();
             }
         });
         imageViewChronological = view.findViewById(R.id.meeting_sorting_dialog_iv_chronological);

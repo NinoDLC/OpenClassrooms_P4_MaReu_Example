@@ -14,15 +14,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.TransitionManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.List;
 
 import fr.delcey.mareu.BuildConfig;
 import fr.delcey.mareu.R;
@@ -31,15 +28,10 @@ import fr.delcey.mareu.domain.MeetingRepository;
 import fr.delcey.mareu.domain.pojo.Room;
 import fr.delcey.mareu.ui.create.CreateMeetingActivity;
 import fr.delcey.mareu.ui.meetings.hour_filter.HourFilterAdapter;
-import fr.delcey.mareu.ui.meetings.hour_filter.HourFilterModel;
 import fr.delcey.mareu.ui.meetings.hour_filter.OnHourSelectedListener;
 import fr.delcey.mareu.ui.meetings.meeting.MeetingAdapter;
-import fr.delcey.mareu.ui.meetings.meeting.MeetingModel;
 import fr.delcey.mareu.ui.meetings.room_filter.OnRoomSelectedListener;
 import fr.delcey.mareu.ui.meetings.room_filter.RoomFilterAdapter;
-import fr.delcey.mareu.ui.meetings.room_filter.RoomFilterModel;
-import fr.delcey.mareu.ui.meetings.sort.AlphabeticSortingType;
-import fr.delcey.mareu.ui.meetings.sort.ChronologicalSortingType;
 import fr.delcey.mareu.ui.meetings.sort.OnMeetingSortChangedListener;
 import fr.delcey.mareu.ui.meetings.sort.SortDialogFragment;
 
@@ -86,12 +78,7 @@ public class MeetingActivity extends AppCompatActivity implements
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        viewModel.getMeetingModelsLiveData().observe(this, new Observer<List<MeetingModel>>() {
-            @Override
-            public void onChanged(List<MeetingModel> meetingModels) {
-                adapter.submitList(meetingModels);
-            }
-        });
+        viewModel.getMeetingModelsLiveData().observe(this, meetingModels -> adapter.submitList(meetingModels));
     }
 
     private void initRoomFilterRecyclerView() {
@@ -100,13 +87,10 @@ public class MeetingActivity extends AppCompatActivity implements
         recyclerViewRoom.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerViewRoom.setAdapter(roomAdapter);
 
-        viewModel.getRoomFilterModelLiveData().observe(this, new Observer<RoomFilterModel>() {
-            @Override
-            public void onChanged(RoomFilterModel roomFilterModel) {
-                roomAdapter.submitList(roomFilterModel.getRoomFilterItemModels());
+        viewModel.getRoomFilterModelLiveData().observe(this, roomFilterModel -> {
+            roomAdapter.submitList(roomFilterModel.getRoomFilterItemModels());
 
-                changeVisibilityWithAnimation(recyclerViewRoom, roomFilterModel.isRoomFilterVisible());
-            }
+            changeVisibilityWithAnimation(recyclerViewRoom, roomFilterModel.isRoomFilterVisible());
         });
     }
 
@@ -116,74 +100,54 @@ public class MeetingActivity extends AppCompatActivity implements
         recyclerViewHours.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerViewHours.setAdapter(hourAdapter);
 
-        viewModel.getHourFilterModelLiveData().observe(this, new Observer<HourFilterModel>() {
-            @Override
-            public void onChanged(HourFilterModel hourFilterModel) {
-                hourAdapter.submitList(hourFilterModel.getHourFilterItemModels());
+        viewModel.getHourFilterModelLiveData().observe(this, hourFilterModel -> {
+            hourAdapter.submitList(hourFilterModel.getHourFilterItemModels());
 
-                changeVisibilityWithAnimation(recyclerViewHours, hourFilterModel.isHourFilterVisible());
-            }
+            changeVisibilityWithAnimation(recyclerViewHours, hourFilterModel.isHourFilterVisible());
         });
     }
 
     private void initSortingDialog() {
-        viewModel.getViewActionLiveData().observe(this, new Observer<ViewAction>() {
-            @Override
-            public void onChanged(ViewAction viewAction) {
-                if (viewAction instanceof DisplaySortingDialogViewAction) {
-                    DisplaySortingDialogViewAction casted = (DisplaySortingDialogViewAction) viewAction;
+        viewModel.getViewActionLiveData().observe(this, viewAction -> {
+            if (viewAction instanceof DisplaySortingDialogViewAction) {
+                DisplaySortingDialogViewAction casted = (DisplaySortingDialogViewAction) viewAction;
 
-                    SortDialogFragment.newInstance(
-                        casted.getAlphabeticSortingType(),
-                        casted.getChronologicalSortingType()
-                    ).show(getSupportFragmentManager(), TAG_DIALOG_SORTING);
-                }
+                SortDialogFragment.newInstance(
+                    casted.getAlphabeticSortingType(),
+                    casted.getChronologicalSortingType()
+                ).show(getSupportFragmentManager(), TAG_DIALOG_SORTING);
             }
         });
 
-        viewModel.getAlphabeticSortingTypeLiveData().observe(this, new Observer<AlphabeticSortingType>() {
-            @Override
-            public void onChanged(AlphabeticSortingType alphabeticSortingType) {
-                SortDialogFragment sortDialogFragment = getSortDialogFragment();
+        viewModel.getAlphabeticSortingTypeLiveData().observe(this, alphabeticSortingType -> {
+            SortDialogFragment sortDialogFragment = getSortDialogFragment();
 
-                if (sortDialogFragment != null) {
-                    sortDialogFragment.setAlphabeticSortingType(alphabeticSortingType);
-                }
+            if (sortDialogFragment != null) {
+                sortDialogFragment.setAlphabeticSortingType(alphabeticSortingType);
             }
         });
 
-        viewModel.getChronologicalSortingTypeLiveData().observe(this, new Observer<ChronologicalSortingType>() {
-            @Override
-            public void onChanged(ChronologicalSortingType chronologicalSortingType) {
-                SortDialogFragment sortDialogFragment = getSortDialogFragment();
+        viewModel.getChronologicalSortingTypeLiveData().observe(this, chronologicalSortingType -> {
+            SortDialogFragment sortDialogFragment = getSortDialogFragment();
 
-                if (sortDialogFragment != null) {
-                    sortDialogFragment.setChronologicalSortingType(chronologicalSortingType);
-                }
+            if (sortDialogFragment != null) {
+                sortDialogFragment.setChronologicalSortingType(chronologicalSortingType);
             }
         });
     }
 
     private void initFab() {
         FloatingActionButton floatingActionButton = findViewById(R.id.meeting_fab);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(CreateMeetingActivity.navigate(MeetingActivity.this));
-            }
-        });
+        floatingActionButton.setOnClickListener(view -> startActivity(CreateMeetingActivity.navigate(MeetingActivity.this)));
 
         // This is false in release, so it won't be enabled in prod !
         if (BuildConfig.DEBUG) {
-            floatingActionButton.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
+            floatingActionButton.setOnLongClickListener(view -> {
 
-                    // This is a bad practice, the view should never speak to the Repositories ! (only with its ViewModel)
-                    MeetingRepository.getInstance().addDebugMeeting();
+                // This is a bad practice, the view should never speak to the Repositories ! (only with its ViewModel)
+                MeetingRepository.getInstance().addDebugMeeting();
 
-                    return true;
-                }
+                return true;
             });
         }
     }
@@ -199,19 +163,16 @@ public class MeetingActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.meeting_menu_sort:
-                viewModel.displaySortingDialog();
-
-                return true;
-            case R.id.meeting_menu_filter_room:
-                viewModel.invertRoomFilterVisibility();
-
-                return true;
-            case R.id.meeting_menu_filter_hour:
-                viewModel.invertHourFilterVisibility();
-
-                return true;
+        int itemId = item.getItemId();
+        if (itemId == R.id.meeting_menu_sort) {
+            viewModel.displaySortingDialog();
+            return true;
+        } else if (itemId == R.id.meeting_menu_filter_room) {
+            viewModel.invertRoomFilterVisibility();
+            return true;
+        } else if (itemId == R.id.meeting_menu_filter_hour) {
+            viewModel.invertHourFilterVisibility();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

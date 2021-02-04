@@ -12,21 +12,15 @@ public enum ChronologicalSortingType {
     OLDEST_FIRST(
         new int[]{-R.attr.state_not_sorted, R.attr.state_sorted, -R.attr.state_invert_sorted},
         R.string.sorting_chronological_sorted,
-        new Comparator<Meeting>() {
-            @Override
-            public int compare(Meeting o1, Meeting o2) {
-                return o1.getTime().compareTo(o2.getTime());
-            }
+        (o1, o2) -> {
+            return o1.getTime().compareTo(o2.getTime());
         }
     ),
     NEWEST_FIRST(
         new int[]{-R.attr.state_not_sorted, -R.attr.state_sorted, R.attr.state_invert_sorted},
         R.string.sorting_chronological_inverted_sorted,
-        new Comparator<Meeting>() {
-            @Override
-            public int compare(Meeting o1, Meeting o2) {
-                return o2.getTime().compareTo(o1.getTime());
-            }
+        (o1, o2) -> {
+            return o2.getTime().compareTo(o1.getTime());
         }
     ),
     NONE(

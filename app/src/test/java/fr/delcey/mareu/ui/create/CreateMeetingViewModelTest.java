@@ -73,7 +73,7 @@ public class CreateMeetingViewModelTest {
         viewModel.createMeeting();
 
         ViewAction viewActionResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewActionLiveData());
-        CreateMeetingModel result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
 
         // Then
         assertEquals(ViewAction.CLOSE_ACTIVITY, viewActionResult);
@@ -93,7 +93,7 @@ public class CreateMeetingViewModelTest {
         viewModel.createMeeting();
 
         ViewAction viewActionResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewActionLiveData());
-        CreateMeetingModel result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
 
         // Then
         assertEquals(ViewAction.CLOSE_ACTIVITY, viewActionResult);
@@ -123,7 +123,7 @@ public class CreateMeetingViewModelTest {
         viewModel.createMeeting();
 
         ViewAction viewActionResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewActionLiveData());
-        CreateMeetingModel result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
 
         // Then
         assertEquals(ViewAction.CLOSE_ACTIVITY, viewActionResult);
@@ -153,7 +153,7 @@ public class CreateMeetingViewModelTest {
         viewModel.setRoom(Room.MARIO);
         viewModel.createMeeting();
 
-        CreateMeetingModel result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
 
         // Then
         assertEquals("topic_user_input_error", result.getTopicError());
@@ -174,7 +174,7 @@ public class CreateMeetingViewModelTest {
         viewModel.setTopic("");
         viewModel.createMeeting();
 
-        CreateMeetingModel result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
 
         // Then
         assertEquals("topic_user_input_error", result.getTopicError());
@@ -193,7 +193,7 @@ public class CreateMeetingViewModelTest {
         viewModel.setRoom(Room.MARIO);
         viewModel.createMeeting();
 
-        CreateMeetingModel result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
 
         // Then
         assertNull(result.getTopicError());
@@ -214,7 +214,7 @@ public class CreateMeetingViewModelTest {
         viewModel.setParticipants("");
         viewModel.createMeeting();
 
-        CreateMeetingModel result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
 
         // Then
         assertNull(result.getTopicError());
@@ -230,7 +230,7 @@ public class CreateMeetingViewModelTest {
         viewModel.setParticipants("participant@mail.org");
         viewModel.createMeeting();
 
-        CreateMeetingModel result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
 
         // Then
         assertNull(result.getTopicError());
@@ -248,7 +248,7 @@ public class CreateMeetingViewModelTest {
         viewModel.setRoom(Room.UNKNOW);
         viewModel.createMeeting();
 
-        CreateMeetingModel result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
 
         // Then
         assertNull(result.getTopicError());
@@ -266,7 +266,7 @@ public class CreateMeetingViewModelTest {
         // When
         viewModel.createMeeting();
 
-        CreateMeetingModel result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
 
         // Then
         assertEquals("topic_user_input_error", result.getTopicError());
@@ -284,12 +284,12 @@ public class CreateMeetingViewModelTest {
         // When
         viewModel.createMeeting();
 
-        CreateMeetingModel firstResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState firstResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
 
         viewModel.setTopic("Topic");
         viewModel.createMeeting();
 
-        CreateMeetingModel secondResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState secondResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
 
         // Then
         assertEquals("topic_user_input_error", firstResult.getTopicError());
@@ -311,14 +311,14 @@ public class CreateMeetingViewModelTest {
         // When
         viewModel.createMeeting();
 
-        CreateMeetingModel firstResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState firstResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
 
         viewModel.setTopic("Topic");
         viewModel.setParticipants("participant@mail.org");
         viewModel.setRoom(Room.MARIO);
         viewModel.createMeeting();
 
-        CreateMeetingModel secondResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState secondResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
         ViewAction viewActionResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewActionLiveData());
 
         // Then

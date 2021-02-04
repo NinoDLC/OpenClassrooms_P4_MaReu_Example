@@ -27,7 +27,7 @@ public class CreateMeetingViewModel extends ViewModel {
     @NonNull
     private final MeetingRepository meetingRepository;
 
-    private final MutableLiveData<CreateMeetingModel> createMeetingModelMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<CreateMeetingViewState> createMeetingModelMutableLiveData = new MutableLiveData<>();
 
     private final SingleLiveEvent<ViewAction> viewActionSingleLiveEvent = new SingleLiveEvent<>();
 
@@ -51,7 +51,7 @@ public class CreateMeetingViewModel extends ViewModel {
     }
 
     @NonNull
-    public LiveData<CreateMeetingModel> getCreateMeetingModelLiveData() {
+    public LiveData<CreateMeetingViewState> getCreateMeetingModelLiveData() {
         return createMeetingModelMutableLiveData;
     }
 
@@ -62,11 +62,11 @@ public class CreateMeetingViewModel extends ViewModel {
     public void setTopic(@NonNull String topic) {
         this.topic = topic;
 
-        CreateMeetingModel currentModel = createMeetingModelMutableLiveData.getValue();
+        CreateMeetingViewState currentModel = createMeetingModelMutableLiveData.getValue();
 
         if (!topic.isEmpty() && currentModel != null && currentModel.getTopicError() != null) {
             createMeetingModelMutableLiveData.setValue(
-                new CreateMeetingModel(
+                new CreateMeetingViewState(
                     null,
                     currentModel.getParticipantsError(),
                     currentModel.isRoomErrorVisible()
@@ -88,11 +88,11 @@ public class CreateMeetingViewModel extends ViewModel {
             }
         }
 
-        CreateMeetingModel currentModel = createMeetingModelMutableLiveData.getValue();
+        CreateMeetingViewState currentModel = createMeetingModelMutableLiveData.getValue();
 
         if (!participants.isEmpty() && currentModel != null && currentModel.getTopicError() != null) {
             createMeetingModelMutableLiveData.setValue(
-                new CreateMeetingModel(
+                new CreateMeetingViewState(
                     currentModel.getTopicError(),
                     null,
                     currentModel.isRoomErrorVisible()
@@ -104,11 +104,11 @@ public class CreateMeetingViewModel extends ViewModel {
     public void setRoom(@NonNull Room room) {
         this.room = room;
 
-        CreateMeetingModel currentModel = createMeetingModelMutableLiveData.getValue();
+        CreateMeetingViewState currentModel = createMeetingModelMutableLiveData.getValue();
 
         if (room != Room.UNKNOW && currentModel != null && currentModel.isRoomErrorVisible()) {
             createMeetingModelMutableLiveData.setValue(
-                new CreateMeetingModel(
+                new CreateMeetingViewState(
                     null,
                     currentModel.getParticipantsError(),
                     currentModel.isRoomErrorVisible()
@@ -166,7 +166,7 @@ public class CreateMeetingViewModel extends ViewModel {
         }
 
         createMeetingModelMutableLiveData.setValue(
-            new CreateMeetingModel(
+            new CreateMeetingViewState(
                 topicError,
                 participantsError,
                 isRoomErrorVisible
@@ -176,6 +176,7 @@ public class CreateMeetingViewModel extends ViewModel {
         return areUserInputOk;
     }
 
+    @NonNull
     public CreateMeetingInitModel init() {
         return new CreateMeetingInitModel(Room.values());
     }

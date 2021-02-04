@@ -12,21 +12,15 @@ public enum AlphabeticSortingType {
     AZ(
         new int[]{-R.attr.state_not_sorted, R.attr.state_sorted, -R.attr.state_invert_sorted},
         R.string.sorting_alphabetic_sorted,
-        new Comparator<Meeting>() {
-            @Override
-            public int compare(Meeting o1, Meeting o2) {
-                return o1.getTopic().compareTo(o2.getTopic());
-            }
+        (o1, o2) -> {
+            return o1.getTopic().compareTo(o2.getTopic());
         }
     ),
     ZA(
         new int[]{-R.attr.state_not_sorted, -R.attr.state_sorted, R.attr.state_invert_sorted},
         R.string.sorting_alphabetic_inverted_sorted,
-        new Comparator<Meeting>() {
-            @Override
-            public int compare(Meeting o1, Meeting o2) {
-                return o2.getTopic().compareTo(o1.getTopic());
-            }
+        (o1, o2) -> {
+            return o2.getTopic().compareTo(o1.getTopic());
         }
     ),
     NONE(

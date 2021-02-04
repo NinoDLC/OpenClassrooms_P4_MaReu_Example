@@ -18,7 +18,6 @@ import android.widget.TimePicker;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -31,15 +30,7 @@ import static fr.delcey.mareu.ui.create.CreateMeetingViewModel.ViewAction;
 
 public class CreateMeetingFragment extends Fragment {
 
-    private CreateMeetingViewModel viewModel;
-
-    private EditText topicEditText;
-    private EditText participantsEditText;
-    private Spinner roomSpinner;
-    private TextView roomSpinnerError;
-    private TimePicker timePicker;
-    private FloatingActionButton validateButton;
-
+    @NonNull
     public static CreateMeetingFragment newInstance() {
         return new CreateMeetingFragment();
     }
@@ -51,30 +42,30 @@ public class CreateMeetingFragment extends Fragment {
         @Nullable ViewGroup container,
         @Nullable Bundle savedInstanceState
     ) {
-        View view = inflater.inflate(R.layout.create_meeting_fragment, container, false);
-
-        topicEditText = view.findViewById(R.id.create_meeting_et_topic);
-        participantsEditText = view.findViewById(R.id.create_meeting_et_participants);
-        roomSpinner = view.findViewById(R.id.create_meeting_spi_room);
-        roomSpinnerError = view.findViewById(R.id.create_meeting_tv_room_error);
-        timePicker = view.findViewById(R.id.create_meeting_tp);
-        validateButton = view.findViewById(R.id.create_meeting_fab_validate);
-
-        return view;
+        return inflater.inflate(R.layout.create_meeting_fragment, container, false);
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(CreateMeetingViewModel.class);
+        CreateMeetingViewModel viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(CreateMeetingViewModel.class);
 
-        initTopicEditText();
-        initParticipantsEditText();
-        initTimePicker();
-        initValidateButton();
+        EditText topicEditText = view.findViewById(R.id.create_meeting_et_topic);
+        initTopicEditText(viewModel, topicEditText);
 
-        initRoomSpinner(viewModel.init().getSpinnerData());
+        EditText participantsEditText = view.findViewById(R.id.create_meeting_et_participants);
+        initParticipantsEditText(viewModel,participantsEditText);
+
+        TimePicker timePicker = view.findViewById(R.id.create_meeting_tp);
+        initTimePicker(viewModel,timePicker);
+
+        FloatingActionButton validateButton = view.findViewById(R.id.create_meeting_fab_validate);
+        initValidateButton(viewModel,validateButton);
+
+        Spinner roomSpinner = view.findViewById(R.id.create_meeting_spi_room);
+        TextView roomSpinnerError = view.findViewById(R.id.create_meeting_tv_room_error);
+        initRoomSpinner(viewModel,roomSpinner, viewModel.init().getSpinnerData());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             viewModel.setTime(timePicker.getHour(), timePicker.getMinute());
@@ -82,28 +73,22 @@ public class CreateMeetingFragment extends Fragment {
             viewModel.setTime(timePicker.getCurrentHour(), timePicker.getCurrentMinute());
         }
 
-        viewModel.getCreateMeetingModelLiveData().observe(getViewLifecycleOwner(), new Observer<CreateMeetingModel>() {
-            @Override
-            public void onChanged(CreateMeetingModel createMeetingModel) {
-                topicEditText.setError(createMeetingModel.getTopicError());
-                participantsEditText.setError(createMeetingModel.getParticipantsError());
-                roomSpinnerError.setVisibility(createMeetingModel.isRoomErrorVisible() ? View.VISIBLE : View.GONE);
-            }
+        viewModel.getCreateMeetingModelLiveData().observe(getViewLifecycleOwner(), createMeetingViewState -> {
+            topicEditText.setError(createMeetingViewState.getTopicError());
+            participantsEditText.setError(createMeetingViewState.getParticipantsError());
+            roomSpinnerError.setVisibility(createMeetingViewState.isRoomErrorVisible() ? View.VISIBLE : View.GONE);
         });
 
-        viewModel.getViewActionLiveData().observe(getViewLifecycleOwner(), new Observer<ViewAction>() {
-            @Override
-            public void onChanged(ViewAction viewAction) {
-                if (viewAction == ViewAction.CLOSE_ACTIVITY) {
-                    // This is bad practice, a fragment shouldn't close its activity, but for simplicity's sake...
-                    // https://developer.android.com/training/basics/fragments/communicating
-                    requireActivity().finish();
-                }
+        viewModel.getViewActionLiveData().observe(getViewLifecycleOwner(), viewAction -> {
+            if (viewAction == ViewAction.CLOSE_ACTIVITY) {
+                // This is bad practice, a fragment shouldn't close its activity, but for simplicity's sake...
+                // https://developer.android.com/training/basics/fragments/communicating
+                requireActivity().finish();
             }
         });
     }
 
-    private void initTopicEditText() {
+    private void initTopicEditText(@NonNull CreateMeetingViewModel viewModel, @NonNull EditText topicEditText) {
         topicEditText.setImeOptions(EditorInfo.IME_ACTION_NEXT);
         topicEditText.setRawInputType(InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
         topicEditText.addTextChangedListener(new TextWatcher() {
@@ -122,7 +107,7 @@ public class CreateMeetingFragment extends Fragment {
         });
     }
 
-    private void initParticipantsEditText() {
+    private void initParticipantsEditText(@NonNull CreateMeetingViewModel viewModel, @NonNull EditText participantsEditText) {
         participantsEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
         participantsEditText.setRawInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         participantsEditText.addTextChangedListener(new TextWatcher() {
@@ -141,7 +126,7 @@ public class CreateMeetingFragment extends Fragment {
         });
     }
 
-    private void initRoomSpinner(Room[] spinnerData) {
+    private void initRoomSpinner(@NonNull CreateMeetingViewModel viewModel, @NonNull Spinner roomSpinner, @NonNull Room[] spinnerData) {
         final CreateMeetingSpinnerAdapter adapter = new CreateMeetingSpinnerAdapter(requireContext(), spinnerData);
         roomSpinner.setAdapter(adapter);
         roomSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -161,21 +146,11 @@ public class CreateMeetingFragment extends Fragment {
         });
     }
 
-    private void initTimePicker() {
-        timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-            @Override
-            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                viewModel.setTime(hourOfDay, minute);
-            }
-        });
+    private void initTimePicker(@NonNull CreateMeetingViewModel viewModel, @NonNull TimePicker timePicker) {
+        timePicker.setOnTimeChangedListener((view, hourOfDay, minute) -> viewModel.setTime(hourOfDay, minute));
     }
 
-    private void initValidateButton() {
-        validateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewModel.createMeeting();
-            }
-        });
+    private void initValidateButton(@NonNull CreateMeetingViewModel viewModel, @NonNull FloatingActionButton validateButton) {
+        validateButton.setOnClickListener(view -> viewModel.createMeeting());
     }
 }

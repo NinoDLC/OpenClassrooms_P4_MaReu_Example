@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import fr.delcey.mareu.R;
 
 public class CreateMeetingActivity extends AppCompatActivity {
 
+    @NonNull
     public static Intent navigate(Context context) {
         return new Intent(context, CreateMeetingActivity.class);
     }

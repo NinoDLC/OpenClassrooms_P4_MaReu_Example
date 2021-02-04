@@ -34,4 +34,5 @@
     <string name="sorting_chronological_none">Tri par date : aucun</string>
     <string name="sorting_chronological_sorted">Tri par date : chronologique</string>
     <string name="sorting_chronological_inverted_sorted">Tri par date : inversé</string>
+    <string name="content_description_add">Ajouter</string>
 </resources>

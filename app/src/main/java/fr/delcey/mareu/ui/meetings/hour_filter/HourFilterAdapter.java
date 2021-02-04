@@ -48,12 +48,7 @@ public class HourFilterAdapter extends ListAdapter<HourFilterItemModel, HourFilt
             textViewHour.setText(item.getHour());
             textViewHour.setBackgroundResource(item.getDrawableResBackground());
             textViewHour.setTextColor(item.getTextColor());
-            textViewHour.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onHourSelected(item.getHour());
-                }
-            });
+            textViewHour.setOnClickListener(v -> listener.onHourSelected(item.getHour()));
         }
     }
 

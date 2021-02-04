@@ -125,6 +125,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
+        android:contentDescription="@string/content_description_add"
         android:src="@drawable/ic_check_white_24dp"
         />
 </FrameLayout>

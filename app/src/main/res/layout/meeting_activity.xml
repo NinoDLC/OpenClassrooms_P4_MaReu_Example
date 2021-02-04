@@ -6,22 +6,19 @@
     android:id="@+id/meeting_cl_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.meetings.MeetingActivity"
-    >
+    tools:context=".ui.meetings.MeetingActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        >
+        android:theme="@style/AppTheme.AppBarOverlay">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/meeting_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways"
-            />
+            app:layout_scrollFlags="scroll|enterAlways" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/meeting_rv_rooms"
@@ -29,8 +26,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="2dp"
             android:paddingEnd="2dp"
-            android:visibility="gone"
-            />
+            android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/meeting_rv_hours"
@@ -38,8 +34,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="2dp"
             android:paddingEnd="2dp"
-            android:visibility="gone"
-            />
+            android:visibility="gone" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -47,8 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:listitem="@layout/meeting_itemview"
-        />
+        tools:listitem="@layout/meeting_itemview" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/meeting_fab"
@@ -56,6 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
+        android:contentDescription="@string/content_description_add"
         android:src="@drawable/ic_add_white_24dp"
         />
 

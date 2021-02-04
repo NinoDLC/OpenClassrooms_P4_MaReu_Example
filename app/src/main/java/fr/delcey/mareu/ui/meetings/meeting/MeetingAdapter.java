@@ -61,19 +61,9 @@ public class MeetingAdapter extends ListAdapter<MeetingModel, MeetingAdapter.Vie
             textViewTitle.setText(meetingModel.getTitle());
             textViewParticipants.setText(meetingModel.getParticipants());
 
-            imageViewDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    listener.onMeetingDeleteClicked(meetingModel.getMeetingId());
-                }
-            });
+            imageViewDelete.setOnClickListener(view -> listener.onMeetingDeleteClicked(meetingModel.getMeetingId()));
 
-            layout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    listener.onMeetingClicked(meetingModel.getMeetingId());
-                }
-            });
+            layout.setOnClickListener(view -> listener.onMeetingClicked(meetingModel.getMeetingId()));
         }
     }
 

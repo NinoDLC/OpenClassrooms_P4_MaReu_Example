@@ -4,7 +4,6 @@ import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -74,12 +73,7 @@ public class RoomFilterAdapter extends ListAdapter<RoomFilterItemModel, RoomFilt
 
             chip.setOnCheckedChangeListener(null);
             chip.setChecked(roomItemModel.isSelected());
-            chip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                    listener.onRoomSelected(roomItemModel.getRoom());
-                }
-            });
+            chip.setOnCheckedChangeListener((compoundButton, isChecked) -> listener.onRoomSelected(roomItemModel.getRoom()));
         }
     }
 

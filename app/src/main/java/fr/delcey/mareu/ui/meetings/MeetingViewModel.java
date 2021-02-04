@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import org.threeten.bp.LocalTime;
@@ -17,7 +16,6 @@ import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,80 +88,65 @@ public class MeetingViewModel extends ViewModel {
         // different LiveDatas on subsequent calls, causing weird bugs when "wiring" the Mediator
         final LiveData<List<Meeting>> meetingsLiveData = meetingRepository.getMeetingsLiveData();
 
-        meetingModelsMediatorLiveData.addSource(meetingsLiveData, new Observer<List<Meeting>>() {
-            @Override
-            public void onChanged(List<Meeting> meetings) {
-                meetingModelsMediatorLiveData.setValue(
-                    sortAndFilterMeetings(
-                        meetings,
-                        selectedRoomsLiveData.getValue(),
-                        selectedHoursLiveData.getValue(),
-                        alphabeticSortingTypeLiveData.getValue(),
-                        chronologicalSortingTypeLiveData.getValue()
-                    )
-                );
-            }
-        });
+        meetingModelsMediatorLiveData.addSource(meetingsLiveData, meetings ->
+            meetingModelsMediatorLiveData.setValue(
+                sortAndFilterMeetings(
+                    meetings,
+                    selectedRoomsLiveData.getValue(),
+                    selectedHoursLiveData.getValue(),
+                    alphabeticSortingTypeLiveData.getValue(),
+                    chronologicalSortingTypeLiveData.getValue()
+                )
+            )
+        );
 
-        meetingModelsMediatorLiveData.addSource(selectedRoomsLiveData, new Observer<Map<Room, Boolean>>() {
-            @Override
-            public void onChanged(Map<Room, Boolean> selectedRooms) {
-                meetingModelsMediatorLiveData.setValue(
-                    sortAndFilterMeetings(
-                        meetingsLiveData.getValue(),
-                        selectedRooms,
-                        selectedHoursLiveData.getValue(),
-                        alphabeticSortingTypeLiveData.getValue(),
-                        chronologicalSortingTypeLiveData.getValue()
-                    )
-                );
-            }
-        });
+        meetingModelsMediatorLiveData.addSource(selectedRoomsLiveData, selectedRooms ->
+            meetingModelsMediatorLiveData.setValue(
+                sortAndFilterMeetings(
+                    meetingsLiveData.getValue(),
+                    selectedRooms,
+                    selectedHoursLiveData.getValue(),
+                    alphabeticSortingTypeLiveData.getValue(),
+                    chronologicalSortingTypeLiveData.getValue()
+                )
+            )
+        );
 
-        meetingModelsMediatorLiveData.addSource(selectedHoursLiveData, new Observer<Map<LocalTime, Boolean>>() {
-            @Override
-            public void onChanged(Map<LocalTime, Boolean> selectedHours) {
-                meetingModelsMediatorLiveData.setValue(
-                    sortAndFilterMeetings(
-                        meetingsLiveData.getValue(),
-                        selectedRoomsLiveData.getValue(),
-                        selectedHours,
-                        alphabeticSortingTypeLiveData.getValue(),
-                        chronologicalSortingTypeLiveData.getValue()
-                    )
-                );
-            }
-        });
+        meetingModelsMediatorLiveData.addSource(selectedHoursLiveData, selectedHours ->
+            meetingModelsMediatorLiveData.setValue(
+                sortAndFilterMeetings(
+                    meetingsLiveData.getValue(),
+                    selectedRoomsLiveData.getValue(),
+                    selectedHours,
+                    alphabeticSortingTypeLiveData.getValue(),
+                    chronologicalSortingTypeLiveData.getValue()
+                )
+            )
+        );
 
-        meetingModelsMediatorLiveData.addSource(alphabeticSortingTypeLiveData, new Observer<AlphabeticSortingType>() {
-            @Override
-            public void onChanged(AlphabeticSortingType alphabeticSortingType) {
-                meetingModelsMediatorLiveData.setValue(
-                    sortAndFilterMeetings(
-                        meetingsLiveData.getValue(),
-                        selectedRoomsLiveData.getValue(),
-                        selectedHoursLiveData.getValue(),
-                        alphabeticSortingType,
-                        chronologicalSortingTypeLiveData.getValue()
-                    )
-                );
-            }
-        });
+        meetingModelsMediatorLiveData.addSource(alphabeticSortingTypeLiveData, alphabeticSortingType ->
+            meetingModelsMediatorLiveData.setValue(
+                sortAndFilterMeetings(
+                    meetingsLiveData.getValue(),
+                    selectedRoomsLiveData.getValue(),
+                    selectedHoursLiveData.getValue(),
+                    alphabeticSortingType,
+                    chronologicalSortingTypeLiveData.getValue()
+                )
+            )
+        );
 
-        meetingModelsMediatorLiveData.addSource(chronologicalSortingTypeLiveData, new Observer<ChronologicalSortingType>() {
-            @Override
-            public void onChanged(ChronologicalSortingType chronologicalSortingType) {
-                meetingModelsMediatorLiveData.setValue(
-                    sortAndFilterMeetings(
-                        meetingsLiveData.getValue(),
-                        selectedRoomsLiveData.getValue(),
-                        selectedHoursLiveData.getValue(),
-                        alphabeticSortingTypeLiveData.getValue(),
-                        chronologicalSortingType
-                    )
-                );
-            }
-        });
+        meetingModelsMediatorLiveData.addSource(chronologicalSortingTypeLiveData, chronologicalSortingType ->
+            meetingModelsMediatorLiveData.setValue(
+                sortAndFilterMeetings(
+                    meetingsLiveData.getValue(),
+                    selectedRoomsLiveData.getValue(),
+                    selectedHoursLiveData.getValue(),
+                    alphabeticSortingTypeLiveData.getValue(),
+                    chronologicalSortingType
+                )
+            )
+        );
     }
 
     @NonNull
@@ -240,12 +223,7 @@ public class MeetingViewModel extends ViewModel {
 
         Collections.sort(
             filteredMeetings,
-            new Comparator<Meeting>() {
-                @Override
-                public int compare(Meeting meeting1, Meeting meeting2) {
-                    return compareMeetings(meeting1, meeting2, alphabeticSortingType, chronologicalSortingType);
-                }
-            }
+            (meeting1, meeting2) -> compareMeetings(meeting1, meeting2, alphabeticSortingType, chronologicalSortingType)
         );
 
         for (Meeting filteredMeeting : filteredMeetings) {
@@ -339,19 +317,13 @@ public class MeetingViewModel extends ViewModel {
      ************** */
 
     private void wireFilterRoomMediator() {
-        roomFilterModelMediatorLiveData.addSource(selectedRoomsLiveData, new Observer<Map<Room, Boolean>>() {
-            @Override
-            public void onChanged(Map<Room, Boolean> selectedRooms) {
-                displayOrHideRoomFilter(selectedRooms, isRoomFilterVisibleLiveData.getValue());
-            }
-        });
+        roomFilterModelMediatorLiveData.addSource(selectedRoomsLiveData, selectedRooms ->
+            displayOrHideRoomFilter(selectedRooms, isRoomFilterVisibleLiveData.getValue())
+        );
 
-        roomFilterModelMediatorLiveData.addSource(isRoomFilterVisibleLiveData, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean isRoomFilterVisible) {
-                displayOrHideRoomFilter(selectedRoomsLiveData.getValue(), isRoomFilterVisible);
-            }
-        });
+        roomFilterModelMediatorLiveData.addSource(isRoomFilterVisibleLiveData, isRoomFilterVisible ->
+            displayOrHideRoomFilter(selectedRoomsLiveData.getValue(), isRoomFilterVisible)
+        );
 
         selectedRoomsLiveData.setValue(populateMapWithAvailableRooms());
     }
@@ -433,19 +405,13 @@ public class MeetingViewModel extends ViewModel {
      * Filter: Hour *
      ************** */
     private void wireFilterHourMediator() {
-        hourFilterModelMediatorLiveData.addSource(selectedHoursLiveData, new Observer<Map<LocalTime, Boolean>>() {
-            @Override
-            public void onChanged(Map<LocalTime, Boolean> selectedHours) {
-                displayOrHideHourFilter(selectedHours, isHourFilterVisibleLiveData.getValue());
-            }
-        });
+        hourFilterModelMediatorLiveData.addSource(selectedHoursLiveData, selectedHours ->
+            displayOrHideHourFilter(selectedHours, isHourFilterVisibleLiveData.getValue())
+        );
 
-        hourFilterModelMediatorLiveData.addSource(isHourFilterVisibleLiveData, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean isHourFilterVisible) {
-                displayOrHideHourFilter(selectedHoursLiveData.getValue(), isHourFilterVisible);
-            }
-        });
+        hourFilterModelMediatorLiveData.addSource(isHourFilterVisibleLiveData, isHourFilterVisible ->
+            displayOrHideHourFilter(selectedHoursLiveData.getValue(), isHourFilterVisible)
+        );
 
         selectedHoursLiveData.setValue(populateMapWithAvailableHours());
     }
