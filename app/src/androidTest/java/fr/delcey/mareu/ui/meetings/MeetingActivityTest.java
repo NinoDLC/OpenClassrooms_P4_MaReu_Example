@@ -2,13 +2,15 @@ package fr.delcey.mareu.ui.meetings;
 
 
 import androidx.annotation.NonNull;
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.PerformException;
 import androidx.test.espresso.contrib.RecyclerViewActions;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
-import androidx.test.rule.ActivityTestRule;
 
-import org.junit.Rule;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -36,7 +38,7 @@ import static fr.delcey.mareu.domain.pojo.Room.PEACH;
 import static fr.delcey.mareu.domain.pojo.Room.YOSHI;
 
 @LargeTest
-@RunWith(AndroidJUnit4ClassRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class MeetingActivityTest {
 
     public static final String FIRST_TOPIC = "FIRST_TOPIC";
@@ -59,11 +61,32 @@ public class MeetingActivityTest {
     private static final String FIFTH_PARTICIPANTS = "count.dracula@hoteltransylvania.travel, mavis.dracula@hoteltransylvania.travel, wayne@woof.yahoo";
     private static final Room FIFTH_ROOM = YOSHI;
 
-    @Rule
-    public final ActivityTestRule<MeetingActivity> activityTestRule = new ActivityTestRule<>(MeetingActivity.class);
+    private MeetingActivity activityRef;
+
+    @Before
+    public void setUp() {
+        ActivityScenario<MeetingActivity> activityScenario = ActivityScenario.launch(MeetingActivity.class);
+        activityScenario.recreate();
+        activityScenario.onActivity(activity -> activityRef = activity);
+    }
+
+    @After
+    public void tearDown() {
+        activityRef = null;
+    }
 
     @Test
     public void createMultipleMeetingsWithFilteringAndSorting() throws InterruptedException {
+        // TODO NINO This is so hacky but ActivityScenario don't permit the use of the Orchestrator yet (to run "pm clear" command)...
+        try {
+            //noinspection InfiniteLoopStatement
+            while (true) {
+                onView(withId(R.id.meeting_rv)).perform(RecyclerViewActions.actionOnItemAtPosition(0, new ClickChildViewWithId(R.id.meeting_item_iv_delete)));
+            }
+        } catch (PerformException ignored) {
+            // Happens when all integration tests are launched sequentially, we remove the 2 "Meetings" before
+        }
+
         // Never put time as field... always local variables (or access time on-execution) !
         LocalTime firstTime = LocalTime.of(8, 30);
         LocalTime secondTime = LocalTime.of(16, 15);
@@ -503,7 +526,7 @@ public class MeetingActivityTest {
             new RecyclerViewItemAssertion(
                 positionOnRecyclerView,
                 R.id.meeting_item_tv_title,
-                withText(topic + " - " + time.toString() + " - " + activityTestRule.getActivity().getString(room.getStringResName()))
+                withText(topic + " - " + time.toString() + " - " + activityRef.getString(room.getStringResName()))
             )
         );
         onView(withId(R.id.meeting_rv)).check(

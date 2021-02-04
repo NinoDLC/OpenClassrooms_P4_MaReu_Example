@@ -5,12 +5,13 @@ import android.content.Context;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.rule.ActivityTestRule;
 
-import org.junit.Rule;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -35,11 +36,22 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @LargeTest
-@RunWith(AndroidJUnit4ClassRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class CreateMeetingActivityTest {
 
-    @Rule
-    public final ActivityTestRule<CreateMeetingActivity> activityTestRule = new ActivityTestRule<>(CreateMeetingActivity.class);
+    private CreateMeetingActivity activityRef;
+
+    @Before
+    public void setUp() {
+        ActivityScenario<CreateMeetingActivity> activityScenario = ActivityScenario.launch(CreateMeetingActivity.class);
+        activityScenario.recreate();
+        activityScenario.onActivity(activity -> activityRef = activity);
+    }
+
+    @After
+    public void tearDown() {
+        activityRef = null;
+    }
 
     @Test
     public void createMeeting() {
@@ -50,7 +62,7 @@ public class CreateMeetingActivityTest {
 
         onView(withId(R.id.create_meeting_fab_validate)).perform(click());
 
-        assertTrue(activityTestRule.getActivity().isFinishing());
+        assertTrue(activityRef.isFinishing());
     }
 
     @Test
@@ -87,7 +99,7 @@ public class CreateMeetingActivityTest {
 
         onView(withId(R.id.create_meeting_fab_validate)).perform(click());
 
-        assertFalse(activityTestRule.getActivity().isFinishing());
+        assertFalse(activityRef.isFinishing());
         onView(withId(R.id.create_meeting_et_topic)).check(matches(new EditTextErrorMatcher(R.string.topic_user_input_error)));
         onView(withId(R.id.create_meeting_et_participants)).check(matches(new EditTextErrorMatcher(R.string.participants_user_input_error)));
         onView(withId(R.id.create_meeting_tv_room_error)).check(matches(isDisplayed()));
@@ -96,7 +108,7 @@ public class CreateMeetingActivityTest {
 
         onView(withId(R.id.create_meeting_fab_validate)).perform(click());
 
-        assertFalse(activityTestRule.getActivity().isFinishing());
+        assertFalse(activityRef.isFinishing());
         onView(withId(R.id.create_meeting_et_topic)).check(matches(new EditTextErrorMatcher(0)));
         onView(withId(R.id.create_meeting_et_participants)).check(matches(new EditTextErrorMatcher(R.string.participants_user_input_error)));
         onView(withId(R.id.create_meeting_tv_room_error)).check(matches(isDisplayed()));
@@ -105,7 +117,7 @@ public class CreateMeetingActivityTest {
 
         onView(withId(R.id.create_meeting_fab_validate)).perform(click());
 
-        assertFalse(activityTestRule.getActivity().isFinishing());
+        assertFalse(activityRef.isFinishing());
         onView(withId(R.id.create_meeting_et_topic)).check(matches(new EditTextErrorMatcher(0)));
         onView(withId(R.id.create_meeting_et_participants)).check(matches(new EditTextErrorMatcher(0)));
         onView(withId(R.id.create_meeting_tv_room_error)).check(matches(isDisplayed()));
@@ -113,6 +125,6 @@ public class CreateMeetingActivityTest {
         CreateMeetingUtils.setMeetingRoom(Room.PEACH);
 
         onView(withId(R.id.create_meeting_fab_validate)).perform(click());
-        assertTrue(activityTestRule.getActivity().isFinishing());
+        assertTrue(activityRef.isFinishing());
     }
 }

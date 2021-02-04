@@ -12,16 +12,6 @@ android {
         versionName '1.0'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        // The following argument makes the Android Test Orchestrator run its
-        // "pm clear" command after each test invocation. This command ensures
-        // that the app's state is completely cleared between tests.
-        testInstrumentationRunnerArguments clearPackageData: 'true'
-    }
-
-    testOptions {
-        // New android orchestrator allows us to clear data between each instrumentation test
-        execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
 
     compileOptions {
@@ -61,13 +51,8 @@ dependencies {
 
     // Allow use of "PickerAction" for example : https://developer.android.com/reference/androidx/test/espresso/contrib/package-summary
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.3.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    // Base dependency for Espresso
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test:rules:1.3.0'
-    androidTestImplementation 'androidx.test:runner:1.3.0'
-
-    // Allow the line "testOptions { execution 'ANDROIDX_TEST_ORCHESTRATOR' }" to be considered
-    androidTestUtil 'androidx.test:orchestrator:1.3.0'
 }
 
 android.applicationVariants.all { variant ->
