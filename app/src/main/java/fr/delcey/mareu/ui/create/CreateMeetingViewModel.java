@@ -8,9 +8,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import org.threeten.bp.Clock;
-import org.threeten.bp.LocalTime;
-
+import java.time.Clock;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 

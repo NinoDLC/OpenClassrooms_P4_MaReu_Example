@@ -3,7 +3,7 @@ package fr.delcey.mareu.ui;
 import androidx.annotation.NonNull;
 import androidx.test.espresso.contrib.PickerActions;
 
-import org.threeten.bp.LocalTime;
+import java.time.LocalTime;
 
 import fr.delcey.mareu.R;
 import fr.delcey.mareu.domain.pojo.Room;

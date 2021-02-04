@@ -1,7 +1,6 @@
 package fr.delcey.mareu.domain;
 
-import org.threeten.bp.LocalTime;
-
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

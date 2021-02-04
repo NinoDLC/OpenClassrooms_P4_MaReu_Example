@@ -13,7 +13,8 @@ import androidx.test.rule.ActivityTestRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.threeten.bp.LocalTime;
+
+import java.time.LocalTime;
 
 import fr.delcey.mareu.R;
 import fr.delcey.mareu.domain.pojo.Room;

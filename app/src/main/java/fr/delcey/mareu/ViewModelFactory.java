@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.threeten.bp.Clock;
+import java.time.Clock;
 
 import fr.delcey.mareu.domain.MeetingRepository;
 import fr.delcey.mareu.ui.create.CreateMeetingViewModel;

@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.threeten.bp.LocalTime;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 

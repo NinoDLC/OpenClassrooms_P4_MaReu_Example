@@ -1,7 +1,6 @@
 package fr.delcey.mareu.domain.pojo;
 
-import org.threeten.bp.LocalTime;
-
+import java.time.LocalTime;
 import java.util.List;
 
 import androidx.annotation.NonNull;
