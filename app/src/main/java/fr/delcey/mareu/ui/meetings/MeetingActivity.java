@@ -144,8 +144,7 @@ public class MeetingActivity extends AppCompatActivity implements
         if (BuildConfig.DEBUG) {
             floatingActionButton.setOnLongClickListener(view -> {
 
-                // This is a bad practice, the view should never speak to the Repositories ! (only with its ViewModel)
-                MeetingRepository.getInstance().addDebugMeeting();
+                viewModel.addDebugMeeting();
 
                 return true;
             });

@@ -21,7 +21,7 @@ import fr.delcey.mareu.R;
 import fr.delcey.mareu.domain.MeetingRepository;
 import fr.delcey.mareu.domain.pojo.Meeting;
 import fr.delcey.mareu.domain.pojo.Room;
-import fr.delcey.mareu.ui.meetings.meeting.MeetingModel;
+import fr.delcey.mareu.ui.meetings.meeting.MeetingViewState;
 import fr.delcey.mareu.utils.LiveDataTestUtils;
 
 import static org.junit.Assert.assertEquals;
@@ -52,6 +52,8 @@ public class MeetingViewModelTest {
         given(repository.getMeetingsLiveData()).willReturn(meetingsLiveData);
 
         viewModel = new MeetingViewModel(resources, repository);
+
+        verify(repository).getMeetingsLiveData();
     }
 
     // Basic test, just to "check" if everything is working correctly in "normal" state
@@ -67,7 +69,7 @@ public class MeetingViewModelTest {
         provideResourcesFor4Meetings();
 
         // When
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(4, result.size());
@@ -76,6 +78,7 @@ public class MeetingViewModelTest {
         assertSecondMeetingIsInPosition(result, 1);
         assertThirdMeetingIsInPosition(result, 2);
         assertFourthMeetingIsInPosition(result, 3);
+        verifyNoMoreInteractions(repository);
     }
 
     // region FILTERS
@@ -95,12 +98,13 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.setHourSelected("18:00");
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(1, result.size());
 
         assertSecondMeetingIsInPosition(result, 0);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -116,12 +120,13 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.setHourSelected("14:00");
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(1, result.size());
 
         assertThirdMeetingIsInPosition(result, 0);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -137,13 +142,14 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.setHourSelected("12:00");
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(2, result.size());
 
         assertFirstMeetingIsInPosition(result, 0);
         assertFourthMeetingIsInPosition(result, 1);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -160,13 +166,14 @@ public class MeetingViewModelTest {
         // When
         viewModel.setHourSelected("18:00");
         viewModel.setHourSelected("14:00");
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(2, result.size());
 
         assertSecondMeetingIsInPosition(result, 0);
         assertThirdMeetingIsInPosition(result, 1);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -184,12 +191,13 @@ public class MeetingViewModelTest {
         viewModel.setHourSelected("18:00");
         viewModel.setHourSelected("14:00");
         viewModel.setHourSelected("14:00");
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(1, result.size());
 
         assertSecondMeetingIsInPosition(result, 0);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -208,7 +216,7 @@ public class MeetingViewModelTest {
         viewModel.setHourSelected("14:00");
         viewModel.setHourSelected("14:00");
         viewModel.setHourSelected("18:00");
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(4, result.size());
@@ -217,6 +225,7 @@ public class MeetingViewModelTest {
         assertSecondMeetingIsInPosition(result, 1);
         assertThirdMeetingIsInPosition(result, 2);
         assertFourthMeetingIsInPosition(result, 3);
+        verifyNoMoreInteractions(repository);
     }
 
 
@@ -233,10 +242,11 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.setHourSelected("08:00");
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(0, result.size());
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -253,10 +263,11 @@ public class MeetingViewModelTest {
         // When
         viewModel.setHourSelected("08:00");
         viewModel.setHourSelected("20:00");
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(0, result.size());
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -274,10 +285,11 @@ public class MeetingViewModelTest {
         viewModel.setHourSelected("08:00");
         viewModel.setHourSelected("20:00");
         viewModel.setHourSelected("08:00");
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(0, result.size());
+        verifyNoMoreInteractions(repository);
     }
 
 
@@ -297,12 +309,13 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.setRoomSelected(Room.MEWTWO);
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(1, result.size());
 
         assertThirdMeetingIsInPosition(result, 0);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -318,12 +331,13 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.setRoomSelected(Room.PEACH);
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(1, result.size());
 
         assertFirstMeetingIsInPosition(result, 0);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -339,13 +353,14 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.setRoomSelected(Room.DK);
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(2, result.size());
 
         assertSecondMeetingIsInPosition(result, 0);
         assertFourthMeetingIsInPosition(result, 1);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -362,13 +377,14 @@ public class MeetingViewModelTest {
         // When
         viewModel.setRoomSelected(Room.PEACH);
         viewModel.setRoomSelected(Room.MEWTWO);
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(2, result.size());
 
         assertFirstMeetingIsInPosition(result, 0);
         assertThirdMeetingIsInPosition(result, 1);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -386,12 +402,13 @@ public class MeetingViewModelTest {
         viewModel.setRoomSelected(Room.PEACH);
         viewModel.setRoomSelected(Room.MEWTWO);
         viewModel.setRoomSelected(Room.PEACH);
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(1, result.size());
 
         assertThirdMeetingIsInPosition(result, 0);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -410,7 +427,7 @@ public class MeetingViewModelTest {
         viewModel.setRoomSelected(Room.PEACH);
         viewModel.setRoomSelected(Room.MEWTWO);
         viewModel.setRoomSelected(Room.PEACH);
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(4, result.size());
@@ -419,6 +436,7 @@ public class MeetingViewModelTest {
         assertSecondMeetingIsInPosition(result, 1);
         assertThirdMeetingIsInPosition(result, 2);
         assertFourthMeetingIsInPosition(result, 3);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -434,10 +452,11 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.setRoomSelected(Room.LINK);
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(0, result.size());
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -454,10 +473,11 @@ public class MeetingViewModelTest {
         // When
         viewModel.setRoomSelected(Room.LINK);
         viewModel.setRoomSelected(Room.LUIGI);
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(0, result.size());
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -475,10 +495,11 @@ public class MeetingViewModelTest {
         viewModel.setRoomSelected(Room.LINK);
         viewModel.setRoomSelected(Room.LUIGI);
         viewModel.setRoomSelected(Room.LINK);
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(0, result.size());
+        verifyNoMoreInteractions(repository);
     }
     // endregion
 
@@ -500,7 +521,7 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.changeAlphabeticSorting();
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(4, result.size());
@@ -509,6 +530,7 @@ public class MeetingViewModelTest {
         assertFourthMeetingIsInPosition(result, 1);
         assertSecondMeetingIsInPosition(result, 2);
         assertThirdMeetingIsInPosition(result, 3);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -525,7 +547,7 @@ public class MeetingViewModelTest {
         // When
         viewModel.changeAlphabeticSorting();
         viewModel.changeAlphabeticSorting();
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(4, result.size());
@@ -534,6 +556,7 @@ public class MeetingViewModelTest {
         assertSecondMeetingIsInPosition(result, 1);
         assertFourthMeetingIsInPosition(result, 2);
         assertFirstMeetingIsInPosition(result, 3);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -551,7 +574,7 @@ public class MeetingViewModelTest {
         viewModel.changeAlphabeticSorting();
         viewModel.changeAlphabeticSorting();
         viewModel.changeAlphabeticSorting();
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(4, result.size());
@@ -560,6 +583,7 @@ public class MeetingViewModelTest {
         assertSecondMeetingIsInPosition(result, 1);
         assertThirdMeetingIsInPosition(result, 2);
         assertFourthMeetingIsInPosition(result, 3);
+        verifyNoMoreInteractions(repository);
     }
 
     /* ***************
@@ -578,7 +602,7 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.changeChronologicalSorting();
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(4, result.size());
@@ -587,6 +611,7 @@ public class MeetingViewModelTest {
         assertFourthMeetingIsInPosition(result, 1);
         assertThirdMeetingIsInPosition(result, 2);
         assertSecondMeetingIsInPosition(result, 3);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -603,7 +628,7 @@ public class MeetingViewModelTest {
         // When
         viewModel.changeChronologicalSorting();
         viewModel.changeChronologicalSorting();
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(4, result.size());
@@ -613,6 +638,7 @@ public class MeetingViewModelTest {
         assertThirdMeetingIsInPosition(result, 1);
         assertFourthMeetingIsInPosition(result, 2);
         assertFirstMeetingIsInPosition(result, 3);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -630,7 +656,7 @@ public class MeetingViewModelTest {
         viewModel.changeChronologicalSorting();
         viewModel.changeChronologicalSorting();
         viewModel.changeChronologicalSorting();
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(4, result.size());
@@ -639,6 +665,7 @@ public class MeetingViewModelTest {
         assertSecondMeetingIsInPosition(result, 1);
         assertThirdMeetingIsInPosition(result, 2);
         assertFourthMeetingIsInPosition(result, 3);
+        verifyNoMoreInteractions(repository);
     }
 
     // endregion
@@ -657,12 +684,13 @@ public class MeetingViewModelTest {
         // When
         viewModel.setRoomSelected(Room.DK);
         viewModel.setHourSelected("18:00");
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(1, result.size());
 
         assertSecondMeetingIsInPosition(result, 0);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -679,13 +707,14 @@ public class MeetingViewModelTest {
         // When
         viewModel.changeAlphabeticSorting();
         viewModel.setRoomSelected(Room.DK);
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(2, result.size());
 
         assertFourthMeetingIsInPosition(result, 0);
         assertSecondMeetingIsInPosition(result, 1);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -704,13 +733,14 @@ public class MeetingViewModelTest {
         viewModel.setHourSelected("18:00");
         viewModel.setHourSelected("12:00");
         viewModel.changeChronologicalSorting();
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(2, result.size());
 
         assertFourthMeetingIsInPosition(result, 0);
         assertSecondMeetingIsInPosition(result, 1);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -730,13 +760,14 @@ public class MeetingViewModelTest {
         viewModel.setHourSelected("12:00");
         viewModel.changeChronologicalSorting();
         viewModel.changeChronologicalSorting();
-        List<MeetingModel> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
 
         // Then
         assertEquals(2, result.size());
 
         assertSecondMeetingIsInPosition(result, 0);
         assertFourthMeetingIsInPosition(result, 1);
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -837,28 +868,28 @@ public class MeetingViewModelTest {
     // endregion
 
     // region Assert
-    private void assertFirstMeetingIsInPosition(@NonNull List<MeetingModel> result, int position) {
+    private void assertFirstMeetingIsInPosition(@NonNull List<MeetingViewState> result, int position) {
         assertEquals(result.get(position).getTitle(), "First mapped title");
         assertEquals(result.get(position).getMeetingIcon(), Room.PEACH.getDrawableResIcon());
         assertEquals(result.get(position).getMeetingId(), 0);
         assertEquals(result.get(position).getParticipants(), "participant1_1@gmail.com, participant1_2@outlook.com, participant1_3@subdomain.domain");
     }
 
-    private void assertSecondMeetingIsInPosition(@NonNull List<MeetingModel> result, int position) {
+    private void assertSecondMeetingIsInPosition(@NonNull List<MeetingViewState> result, int position) {
         assertEquals(result.get(position).getTitle(), "Second mapped title");
         assertEquals(result.get(position).getMeetingIcon(), Room.DK.getDrawableResIcon());
         assertEquals(result.get(position).getMeetingId(), 1);
         assertEquals(result.get(position).getParticipants(), "participant2_1@gmail.com, participant2_2@outlook.com, participant2_3@subdomain.domain");
     }
 
-    private void assertThirdMeetingIsInPosition(@NonNull List<MeetingModel> result, int position) {
+    private void assertThirdMeetingIsInPosition(@NonNull List<MeetingViewState> result, int position) {
         assertEquals(result.get(position).getTitle(), "Third mapped title");
         assertEquals(result.get(position).getMeetingIcon(), Room.MEWTWO.getDrawableResIcon());
         assertEquals(result.get(position).getMeetingId(), 2);
         assertEquals(result.get(position).getParticipants(), "participant3_1@gmail.com, participant3_2@outlook.com, participant3_3@subdomain.domain");
     }
 
-    private void assertFourthMeetingIsInPosition(@NonNull List<MeetingModel> result, int position) {
+    private void assertFourthMeetingIsInPosition(@NonNull List<MeetingViewState> result, int position) {
         assertEquals(result.get(position).getTitle(), "Fourth mapped title");
         assertEquals(result.get(position).getMeetingIcon(), Room.DK.getDrawableResIcon());
         assertEquals(result.get(position).getMeetingId(), 3);

@@ -14,19 +14,25 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
     private static ViewModelFactory factory;
 
-    private ViewModelFactory() {
-    }
-
     public static ViewModelFactory getInstance() {
         if (factory == null) {
             synchronized (ViewModelFactory.class) {
                 if (factory == null) {
-                    factory = new ViewModelFactory();
+                    factory = new ViewModelFactory(
+                        new MeetingRepository()
+                    );
                 }
             }
         }
 
         return factory;
+    }
+
+    @NonNull
+    private final MeetingRepository meetingRepository;
+
+    private ViewModelFactory(@NonNull MeetingRepository meetingRepository) {
+        this.meetingRepository = meetingRepository;
     }
 
     @SuppressWarnings("unchecked")
@@ -36,12 +42,12 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         if (modelClass.isAssignableFrom(MeetingViewModel.class)) {
             return (T) new MeetingViewModel(
                 MainApplication.getInstance().getResources(),
-                MeetingRepository.getInstance()
+                meetingRepository
             );
         } else if (modelClass.isAssignableFrom(CreateMeetingViewModel.class)) {
             return (T) new CreateMeetingViewModel(
                 MainApplication.getInstance().getResources(),
-                MeetingRepository.getInstance(),
+                meetingRepository,
                 Clock.systemDefaultZone()
             );
         }

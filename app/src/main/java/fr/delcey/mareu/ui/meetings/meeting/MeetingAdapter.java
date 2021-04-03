@@ -12,8 +12,9 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import fr.delcey.mareu.R;
+import fr.delcey.mareu.domain.pojo.Meeting;
 
-public class MeetingAdapter extends ListAdapter<MeetingModel, MeetingAdapter.ViewHolder> {
+public class MeetingAdapter extends ListAdapter<MeetingViewState, MeetingAdapter.ViewHolder> {
 
     @NonNull
     private final Listener listener;
@@ -56,14 +57,14 @@ public class MeetingAdapter extends ListAdapter<MeetingModel, MeetingAdapter.Vie
             imageViewDelete = itemView.findViewById(R.id.meeting_item_iv_delete);
         }
 
-        public void bind(@NonNull final MeetingModel meetingModel, @NonNull final Listener listener) {
-            imageViewRoom.setImageResource(meetingModel.getMeetingIcon());
-            textViewTitle.setText(meetingModel.getTitle());
-            textViewParticipants.setText(meetingModel.getParticipants());
+        public void bind(@NonNull final MeetingViewState meetingViewState, @NonNull final Listener listener) {
+            imageViewRoom.setImageResource(meetingViewState.getMeetingIcon());
+            textViewTitle.setText(meetingViewState.getTitle());
+            textViewParticipants.setText(meetingViewState.getParticipants());
 
-            imageViewDelete.setOnClickListener(view -> listener.onMeetingDeleteClicked(meetingModel.getMeetingId()));
+            imageViewDelete.setOnClickListener(view -> listener.onMeetingDeleteClicked(meetingViewState.getMeetingId()));
 
-            layout.setOnClickListener(view -> listener.onMeetingClicked(meetingModel.getMeetingId()));
+            layout.setOnClickListener(view -> listener.onMeetingClicked(meetingViewState.getMeetingId()));
         }
     }
 
@@ -74,14 +75,14 @@ public class MeetingAdapter extends ListAdapter<MeetingModel, MeetingAdapter.Vie
         void onMeetingDeleteClicked(int meetingId);
     }
 
-    private static class MeetingAdapterDiffCallback extends DiffUtil.ItemCallback<MeetingModel> {
+    private static class MeetingAdapterDiffCallback extends DiffUtil.ItemCallback<MeetingViewState> {
         @Override
-        public boolean areItemsTheSame(@NonNull MeetingModel oldItem, @NonNull MeetingModel newItem) {
+        public boolean areItemsTheSame(@NonNull MeetingViewState oldItem, @NonNull MeetingViewState newItem) {
             return oldItem.getMeetingId() == newItem.getMeetingId();
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull MeetingModel oldItem, @NonNull MeetingModel newItem) {
+        public boolean areContentsTheSame(@NonNull MeetingViewState oldItem, @NonNull MeetingViewState newItem) {
             return oldItem.getTitle().equals(newItem.getTitle())
                 && oldItem.getParticipants().equals(newItem.getParticipants())
                 && oldItem.getMeetingIcon() == newItem.getMeetingIcon();

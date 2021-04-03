@@ -3,7 +3,7 @@ package fr.delcey.mareu.ui.meetings.meeting;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
-public class MeetingModel {
+public class MeetingViewState {
 
     private final int meetingId;
 
@@ -16,7 +16,7 @@ public class MeetingModel {
     @NonNull
     private final String participants;
 
-    public MeetingModel(
+    public MeetingViewState(
         int meetingId,
         @DrawableRes int meetingIcon,
         @NonNull String title,

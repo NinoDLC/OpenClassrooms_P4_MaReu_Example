@@ -32,6 +32,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateMeetingViewModelTest {
@@ -108,6 +109,7 @@ public class CreateMeetingViewModelTest {
             }}),
             eq(Room.MARIO)
         );
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -141,6 +143,7 @@ public class CreateMeetingViewModelTest {
             }}),
             eq(Room.MARIO)
         );
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
@@ -303,7 +306,7 @@ public class CreateMeetingViewModelTest {
     }
 
     @Test
-    public void given_nothing_is_set_everything_is_set_livedata_should_expose_viewmodel_with_no_error() throws InterruptedException {
+    public void given_nothing_is_set_then_everything_is_set_livedata_should_expose_viewmodel_with_no_error() throws InterruptedException {
         // Given
         given(resources.getString(R.string.topic_user_input_error)).willReturn("topic_user_input_error");
         given(resources.getString(R.string.participants_user_input_error)).willReturn("participants_user_input_error");
@@ -343,5 +346,6 @@ public class CreateMeetingViewModelTest {
             }}),
             eq(Room.MARIO)
         );
+        verifyNoMoreInteractions(repository);
     }
 }

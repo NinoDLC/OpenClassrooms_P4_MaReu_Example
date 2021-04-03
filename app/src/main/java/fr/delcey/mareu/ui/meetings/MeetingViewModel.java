@@ -25,7 +25,7 @@ import fr.delcey.mareu.domain.pojo.Meeting;
 import fr.delcey.mareu.domain.pojo.Room;
 import fr.delcey.mareu.ui.meetings.hour_filter.HourFilterItemModel;
 import fr.delcey.mareu.ui.meetings.hour_filter.HourFilterModel;
-import fr.delcey.mareu.ui.meetings.meeting.MeetingModel;
+import fr.delcey.mareu.ui.meetings.meeting.MeetingViewState;
 import fr.delcey.mareu.ui.meetings.room_filter.RoomFilterItemModel;
 import fr.delcey.mareu.ui.meetings.room_filter.RoomFilterModel;
 import fr.delcey.mareu.ui.meetings.sort.AlphabeticSortingType;
@@ -44,7 +44,7 @@ public class MeetingViewModel extends ViewModel {
     @NonNull
     private final MeetingRepository meetingRepository;
 
-    private final MediatorLiveData<List<MeetingModel>> meetingModelsMediatorLiveData = new MediatorLiveData<>();
+    private final MediatorLiveData<List<MeetingViewState>> meetingModelsMediatorLiveData = new MediatorLiveData<>();
 
     // ViewAction : display sorting dialog
     private final MutableLiveData<ViewAction> viewActionLiveEvent = new SingleLiveEvent<>();
@@ -149,18 +149,18 @@ public class MeetingViewModel extends ViewModel {
     }
 
     @NonNull
-    public LiveData<List<MeetingModel>> getMeetingModelsLiveData() {
+    public LiveData<List<MeetingViewState>> getMeetingModelsLiveData() {
         return meetingModelsMediatorLiveData;
     }
 
-    private List<MeetingModel> sortAndFilterMeetings(
+    private List<MeetingViewState> sortAndFilterMeetings(
         @Nullable final List<Meeting> meetings,
         @Nullable final Map<Room, Boolean> selectedRooms,
         @Nullable final Map<LocalTime, Boolean> selectedHours,
         @Nullable final AlphabeticSortingType alphabeticSortingType,
         @Nullable final ChronologicalSortingType chronologicalSortingType
     ) {
-        List<MeetingModel> result = new ArrayList<>();
+        List<MeetingViewState> result = new ArrayList<>();
 
         if (meetings == null
             || selectedRooms == null
@@ -274,8 +274,8 @@ public class MeetingViewModel extends ViewModel {
     // Meeting is for databases, it has technical values
     // MeetingModel is for the view (Activity or Fragment), it mostly has Strings or Android Resource Identifiers
     @NonNull
-    private MeetingModel mapMeeting(@NonNull Meeting meeting) {
-        return new MeetingModel(
+    private MeetingViewState mapMeeting(@NonNull Meeting meeting) {
+        return new MeetingViewState(
             meeting.getId(),
             meeting.getRoom().getDrawableResIcon(),
             resources.getString(
@@ -592,5 +592,9 @@ public class MeetingViewModel extends ViewModel {
         }
 
         chronologicalSortingTypeLiveData.setValue(newType);
+    }
+
+    public void addDebugMeeting() {
+        meetingRepository.addDebugMeeting();
     }
 }

@@ -2,6 +2,7 @@ package fr.delcey.mareu.domain.pojo;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 
@@ -57,5 +58,33 @@ public class Meeting {
     @NonNull
     public Room getRoom() {
         return room;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Meeting meeting = (Meeting) o;
+        return id == meeting.id &&
+            topic.equals(meeting.topic) &&
+            time.equals(meeting.time) &&
+            participants.equals(meeting.participants) &&
+            room == meeting.room;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, topic, time, participants, room);
+    }
+
+    @Override
+    public String toString() {
+        return "Meeting{" +
+            "id=" + id +
+            ", topic='" + topic + '\'' +
+            ", time=" + time +
+            ", participants=" + participants +
+            ", room=" + room +
+            '}';
     }
 }

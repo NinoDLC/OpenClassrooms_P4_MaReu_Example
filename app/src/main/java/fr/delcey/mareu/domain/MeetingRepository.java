@@ -8,31 +8,13 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
 import fr.delcey.mareu.BuildConfig;
 import fr.delcey.mareu.domain.pojo.Meeting;
 import fr.delcey.mareu.domain.pojo.Room;
 import fr.delcey.mareu.utils.debug.Mock;
 
 public class MeetingRepository {
-
-    private static MeetingRepository instance;
-
-    private MeetingRepository() {
-    }
-
-    public static MeetingRepository getInstance() {
-        if (instance == null) {
-            synchronized (MeetingRepository.class) {
-                if (instance == null) {
-                    instance = new MeetingRepository();
-                }
-            }
-        }
-
-        return instance;
-    }
-
-    private final List<Meeting> meetings = new ArrayList<>();
 
     private final MutableLiveData<List<Meeting>> meetingsLiveData = new MutableLiveData<>();
 
@@ -44,7 +26,13 @@ public class MeetingRepository {
         @NonNull List<String> participants,
         @NonNull Room room
     ) {
-        meetings.add(
+        List<Meeting> currentList = meetingsLiveData.getValue();
+
+        if (currentList == null) {
+            currentList = new ArrayList<>();
+        }
+
+        currentList.add(
             new Meeting(
                 highestMeetingId,
                 topic,
@@ -56,11 +44,17 @@ public class MeetingRepository {
 
         highestMeetingId++;
 
-        meetingsLiveData.setValue(meetings);
+        meetingsLiveData.setValue(currentList);
     }
 
     public void deleteMeeting(int meetingId) {
-        for (Iterator<Meeting> iterator = meetings.iterator(); iterator.hasNext(); ) {
+        List<Meeting> currentList = meetingsLiveData.getValue();
+
+        if (currentList == null) {
+            currentList = new ArrayList<>();
+        }
+
+        for (Iterator<Meeting> iterator = currentList.iterator(); iterator.hasNext(); ) {
             Meeting meeting = iterator.next();
 
             if (meeting.getId() == meetingId) {
@@ -69,7 +63,7 @@ public class MeetingRepository {
             }
         }
 
-        meetingsLiveData.setValue(meetings);
+        meetingsLiveData.setValue(currentList);
     }
 
     @NonNull
