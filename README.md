@@ -1,6 +1,8 @@
 # Démo
 ![Démo Gif, wait for it !](https://github.com/NinoDLC/Android_P4_Ma_reu/blob/master/example.gif)
 
+![Démo Gif for detail screen, wait for it !](https://github.com/NinoDLC/Android_P4_Ma_reu/blob/master/example_detail.gif)
+
 # Sujets abordés / démontrés
  * Architecture MVVM (Model View ViewModel)
  * `LiveData` (`MediatorLiveData`)
