@@ -3,8 +3,6 @@ package fr.delcey.mareu.ui.meetings;
 
 import androidx.annotation.NonNull;
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.Espresso;
-import androidx.test.espresso.PerformException;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -27,8 +25,10 @@ import fr.delcey.mareu.ui.utils.RecyclerViewItemAssertion;
 import fr.delcey.mareu.ui.utils.RecyclerViewItemCountAssertion;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToHolder;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -66,7 +66,6 @@ public class MeetingActivityTest {
     @Before
     public void setUp() {
         ActivityScenario<MeetingActivity> activityScenario = ActivityScenario.launch(MeetingActivity.class);
-        activityScenario.recreate();
         activityScenario.onActivity(activity -> activityRef = activity);
     }
 
@@ -76,17 +75,7 @@ public class MeetingActivityTest {
     }
 
     @Test
-    public void createMultipleMeetingsWithFilteringAndSorting() throws InterruptedException {
-        // TODO NINO This is so hacky but ActivityScenario don't permit the use of the Orchestrator yet (to run "pm clear" command)...
-        try {
-            //noinspection InfiniteLoopStatement
-            while (true) {
-                onView(withId(R.id.meeting_rv)).perform(RecyclerViewActions.actionOnItemAtPosition(0, new ClickChildViewWithId(R.id.meeting_item_iv_delete)));
-            }
-        } catch (PerformException ignored) {
-            // Happens when all integration tests are launched sequentially, we remove the 2 "Meetings" before
-        }
-
+    public void createMultipleMeetingsWithFilteringAndSorting() {
         // Never put time as field... always local variables (or access time on-execution) !
         LocalTime firstTime = LocalTime.of(8, 30);
         LocalTime secondTime = LocalTime.of(16, 15);
@@ -103,7 +92,7 @@ public class MeetingActivityTest {
 
         // Action : Go on "Create meeting page" and back immediately
         onView(withId(R.id.meeting_fab)).perform(click());
-        Espresso.pressBack();
+        pressBack();
 
         // Assertions : Back to "normal"
         onView(withId(R.id.meeting_rv)).check(new RecyclerViewItemCountAssertion(1));
@@ -119,8 +108,6 @@ public class MeetingActivityTest {
 
         // Action : Delete meeting 1 (Mario)
         onView(withId(R.id.meeting_rv)).perform(RecyclerViewActions.actionOnItemAtPosition(0, new ClickChildViewWithId(R.id.meeting_item_iv_delete)));
-        // TODO NINO WHY IS IT NECESSARY ?
-        Thread.sleep(100);
 
         // Assertions : Mario is deleted
         onView(withId(R.id.meeting_rv)).check(new RecyclerViewItemCountAssertion(1));
@@ -136,8 +123,6 @@ public class MeetingActivityTest {
 
         // Action : Delete meeting 2 (Peach)
         onView(withId(R.id.meeting_rv)).perform(RecyclerViewActions.actionOnItemAtPosition(0, new ClickChildViewWithId(R.id.meeting_item_iv_delete)));
-        // TODO NINO WHY IS IT NECESSARY ?
-        Thread.sleep(100);
 
         // Assertions : Mario is alone in the list
         onView(withId(R.id.meeting_rv)).check(new RecyclerViewItemCountAssertion(1));
@@ -352,8 +337,6 @@ public class MeetingActivityTest {
 
         // Action : Delete meeting 4 (second Peach)
         onView(withId(R.id.meeting_rv)).perform(RecyclerViewActions.actionOnItemAtPosition(2, new ClickChildViewWithId(R.id.meeting_item_iv_delete)));
-        // TODO NINO WHY IS IT NECESSARY ?
-        Thread.sleep(100);
 
         // Assertions : PEACH & DK are on the list
         onView(withId(R.id.meeting_rv)).check(new RecyclerViewItemCountAssertion(2));
@@ -429,7 +412,7 @@ public class MeetingActivityTest {
         onView(withId(R.id.meeting_sorting_dialog_tv_chronological)).check(matches(withText(R.string.sorting_chronological_none)));
 
         // Action : Back to MeetingActivity
-        Espresso.pressBack();
+        pressBack();
 
         // Assertions : YOSHI and one PEACH are on the list
         onView(withId(R.id.meeting_rv)).check(new RecyclerViewItemCountAssertion(2));
@@ -451,7 +434,7 @@ public class MeetingActivityTest {
         onView(withId(R.id.meeting_sorting_dialog_tv_chronological)).check(matches(withText(R.string.sorting_chronological_none)));
 
         // Action : Back to MeetingActivity
-        Espresso.pressBack();
+        pressBack();
 
         // Assertions : One PEACH and YOSHI are on the list
         onView(withId(R.id.meeting_rv)).check(new RecyclerViewItemCountAssertion(2));
@@ -497,7 +480,7 @@ public class MeetingActivityTest {
         onView(withId(R.id.meeting_sorting_dialog_tv_chronological)).check(matches(withText(R.string.sorting_chronological_none)));
 
         // Action : Back to MeetingActivity
-        Espresso.pressBack();
+        pressBack();
 
         // Assertions : Back to "normal"
         assertStateForItem(0, FIRST_TOPIC, FIRST_PARTICIPANTS, FIRST_ROOM, firstTime);

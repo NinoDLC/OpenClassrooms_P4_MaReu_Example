@@ -10,7 +10,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,13 +43,7 @@ public class CreateMeetingActivityTest {
     @Before
     public void setUp() {
         ActivityScenario<CreateMeetingActivity> activityScenario = ActivityScenario.launch(CreateMeetingActivity.class);
-        activityScenario.recreate();
         activityScenario.onActivity(activity -> activityRef = activity);
-    }
-
-    @After
-    public void tearDown() {
-        activityRef = null;
     }
 
     @Test
