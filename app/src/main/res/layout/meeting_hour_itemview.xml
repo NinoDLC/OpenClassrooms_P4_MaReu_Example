@@ -7,5 +7,4 @@
     android:layout_height="48dp"
     android:gravity="center"
     tools:background="@drawable/shape_hour_selection_end"
-    tools:text="08:00"
-    />
+    tools:text="08:00" />

@@ -23,6 +23,8 @@
     <string name="empty" />
     <string name="create_meeting_title">Create a new meeting</string>
 
+    <string name="detail_meeting_title">Meeting details</string>
+
     <string name="filter_room">Filter by room</string>
     <string name="filter_hour">Filter by hour</string>
 
@@ -36,4 +38,16 @@
     <string name="sorting_chronological_inverted_sorted">Chronological sorting : inverted</string>
 
     <string name="content_description_add">Add</string>
+    <string name="meeting_finished">The meeting is over</string>
+    <string name="meeting_ongoing">The meeting is ongoing…</string>
+
+    <plurals name="meeting_in_hours">
+        <item quantity="one">Meeting starting in %d hour</item>
+        <item quantity="other">Meeting starting in %d hours</item>
+    </plurals>
+
+    <plurals name="meeting_in_minutes">
+        <item quantity="one">Meeting starting in %d minute</item>
+        <item quantity="other">Meeting starting in %d minutes</item>
+    </plurals>
 </resources>

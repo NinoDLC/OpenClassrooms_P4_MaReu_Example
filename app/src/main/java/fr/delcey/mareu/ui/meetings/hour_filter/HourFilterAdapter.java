@@ -6,13 +6,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import fr.delcey.mareu.R;
 
-public class HourFilterAdapter extends ListAdapter<HourFilterItemModel, HourFilterAdapter.ViewHolder> {
+public class HourFilterAdapter extends ListAdapter<MeetingViewStateHourFilterItem, HourFilterAdapter.ViewHolder> {
 
     @NonNull
     private final OnHourSelectedListener listener;
@@ -44,24 +45,24 @@ public class HourFilterAdapter extends ListAdapter<HourFilterItemModel, HourFilt
             textViewHour = itemView.findViewById(R.id.meeting_hour_filter_tv_hour);
         }
 
-        public void bind(@NonNull final HourFilterItemModel item, @NonNull final OnHourSelectedListener listener) {
+        public void bind(@NonNull final MeetingViewStateHourFilterItem item, @NonNull final OnHourSelectedListener listener) {
             textViewHour.setText(item.getHour());
             textViewHour.setBackgroundResource(item.getDrawableResBackground());
-            textViewHour.setTextColor(item.getTextColor());
+            textViewHour.setTextColor(ContextCompat.getColor(textViewHour.getContext(), item.getTextColorRes()));
             textViewHour.setOnClickListener(v -> listener.onHourSelected(item.getHour()));
         }
     }
 
-    private static class HourFilterAdapterDiffCallback extends DiffUtil.ItemCallback<HourFilterItemModel> {
+    private static class HourFilterAdapterDiffCallback extends DiffUtil.ItemCallback<MeetingViewStateHourFilterItem> {
         @Override
-        public boolean areItemsTheSame(@NonNull HourFilterItemModel oldItem, @NonNull HourFilterItemModel newItem) {
+        public boolean areItemsTheSame(@NonNull MeetingViewStateHourFilterItem oldItem, @NonNull MeetingViewStateHourFilterItem newItem) {
             return oldItem.getHour().equals(newItem.getHour());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull HourFilterItemModel oldItem, @NonNull HourFilterItemModel newItem) {
+        public boolean areContentsTheSame(@NonNull MeetingViewStateHourFilterItem oldItem, @NonNull MeetingViewStateHourFilterItem newItem) {
             return oldItem.getDrawableResBackground() == newItem.getDrawableResBackground()
-                && oldItem.getTextColor() == newItem.getTextColor();
+                && oldItem.getTextColorRes() == newItem.getTextColorRes();
         }
     }
 }

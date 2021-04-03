@@ -2,8 +2,7 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="fr.delcey.mareu"
-    >
+    package="fr.delcey.mareu">
 
     <application
         android:name=".MainApplication"
@@ -13,12 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning"
-        >
-        <activity
-            android:name=".ui.meetings.MeetingActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            >
+        tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".ui.meetings.MeetingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,7 +22,9 @@
         </activity>
         <activity
             android:name=".ui.create.CreateMeetingActivity"
-            android:label="@string/create_meeting_title"
-            />
+            android:label="@string/create_meeting_title" />
+        <activity
+            android:name=".ui.details.MeetingDetailActivity"
+            android:label="@string/detail_meeting_title" />
     </application>
 </manifest>

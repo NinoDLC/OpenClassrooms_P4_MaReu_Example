@@ -1,18 +1,37 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar.Bridge">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-    </style>
 
-    <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+
+        <!-- enable window content transitions (shared element transition) -->
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowEnterTransition">@transition/fade_delay</item>
+        <item name="android:windowReenterTransition">@transition/fade_delay</item>
+        <item name="android:windowReturnTransition">@transition/fade</item>
+        <item name="android:windowExitTransition">@transition/fade</item>
+        <item name="android:windowSharedElementEnterTransition">@transition/autotransition</item>
+        <item name="android:windowSharedElementExitTransition">@transition/autotransition</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
 
+    <style name="Widget.MaReu.TextView" parent="@android:style/Widget.Material.TextView" />
+
+    <style name="Widget.MaReu.TextView.Topic">
+        <item name="android:textColor">@color/textColor</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Widget.MaReu.TextView.Participants">
+        <item name="android:textColor">@color/textColorSecondary</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 </resources>

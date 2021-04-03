@@ -8,6 +8,7 @@ import java.time.Clock;
 
 import fr.delcey.mareu.domain.MeetingRepository;
 import fr.delcey.mareu.ui.create.CreateMeetingViewModel;
+import fr.delcey.mareu.ui.details.MeetingDetailViewModel;
 import fr.delcey.mareu.ui.meetings.MeetingViewModel;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
@@ -46,6 +47,13 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             );
         } else if (modelClass.isAssignableFrom(CreateMeetingViewModel.class)) {
             return (T) new CreateMeetingViewModel(
+                MainApplication.getInstance().getResources(),
+                meetingRepository,
+                Clock.systemDefaultZone()
+            );
+        } else if (modelClass.isAssignableFrom(MeetingDetailViewModel.class)) {
+            return (T) new MeetingDetailViewModel(
+                MainApplication.getInstance(),
                 MainApplication.getInstance().getResources(),
                 meetingRepository,
                 Clock.systemDefaultZone()

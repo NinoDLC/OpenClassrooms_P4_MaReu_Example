@@ -5,9 +5,9 @@ import androidx.annotation.NonNull;
 import fr.delcey.mareu.ui.meetings.sort.AlphabeticSortingType;
 import fr.delcey.mareu.ui.meetings.sort.ChronologicalSortingType;
 
-abstract class ViewAction {
+abstract class MeetingViewAction {
 
-    public static class DisplaySortingDialogViewAction extends ViewAction {
+    public static class DisplaySortingDialogMeetingViewAction extends MeetingViewAction {
 
         @NonNull
         private final AlphabeticSortingType alphabeticSortingType;
@@ -15,7 +15,7 @@ abstract class ViewAction {
         @NonNull
         private final ChronologicalSortingType chronologicalSortingType;
 
-        public DisplaySortingDialogViewAction(
+        public DisplaySortingDialogMeetingViewAction(
             @NonNull AlphabeticSortingType alphabeticSortingType,
             @NonNull ChronologicalSortingType chronologicalSortingType
         ) {

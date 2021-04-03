@@ -1,18 +1,20 @@
 package fr.delcey.mareu.ui.meetings;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,21 +26,22 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import fr.delcey.mareu.BuildConfig;
 import fr.delcey.mareu.R;
 import fr.delcey.mareu.ViewModelFactory;
-import fr.delcey.mareu.domain.MeetingRepository;
 import fr.delcey.mareu.domain.pojo.Room;
 import fr.delcey.mareu.ui.create.CreateMeetingActivity;
+import fr.delcey.mareu.ui.details.MeetingDetailActivity;
 import fr.delcey.mareu.ui.meetings.hour_filter.HourFilterAdapter;
 import fr.delcey.mareu.ui.meetings.hour_filter.OnHourSelectedListener;
-import fr.delcey.mareu.ui.meetings.meeting.MeetingAdapter;
+import fr.delcey.mareu.ui.meetings.list.MeetingAdapter;
+import fr.delcey.mareu.ui.meetings.list.OnMeetingClickedListener;
 import fr.delcey.mareu.ui.meetings.room_filter.OnRoomSelectedListener;
 import fr.delcey.mareu.ui.meetings.room_filter.RoomFilterAdapter;
 import fr.delcey.mareu.ui.meetings.sort.OnMeetingSortChangedListener;
 import fr.delcey.mareu.ui.meetings.sort.SortDialogFragment;
 
-import static fr.delcey.mareu.ui.meetings.ViewAction.DisplaySortingDialogViewAction;
+import static fr.delcey.mareu.ui.meetings.MeetingViewAction.DisplaySortingDialogMeetingViewAction;
 
 public class MeetingActivity extends AppCompatActivity implements
-    MeetingAdapter.Listener,
+    OnMeetingClickedListener,
     OnRoomSelectedListener,
     OnHourSelectedListener,
     OnMeetingSortChangedListener {
@@ -46,6 +49,8 @@ public class MeetingActivity extends AppCompatActivity implements
     private static final String TAG_DIALOG_SORTING = "SortDialogFragment";
 
     private CoordinatorLayout rootView;
+    private RecyclerView recyclerViewRoom;
+    private RecyclerView recyclerViewHour;
 
     private MeetingViewModel viewModel;
 
@@ -55,14 +60,12 @@ public class MeetingActivity extends AppCompatActivity implements
 
         setContentView(R.layout.meeting_activity);
 
-        rootView = findViewById(R.id.meeting_cl_root_view);
+        rootView = findViewById(R.id.meeting_cl_root);
 
         viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MeetingViewModel.class);
 
         initToolbar();
-        initMeetingsRecyclerView();
-        initRoomFilterRecyclerView();
-        initHourFilterRecyclerView();
+        initRecyclerViews();
         initSortingDialog();
         initFab();
     }
@@ -72,45 +75,33 @@ public class MeetingActivity extends AppCompatActivity implements
         setSupportActionBar(toolbar);
     }
 
-    private void initMeetingsRecyclerView() {
+    private void initRecyclerViews() {
         final MeetingAdapter adapter = new MeetingAdapter(this);
         RecyclerView recyclerView = findViewById(R.id.meeting_rv);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        viewModel.getMeetingModelsLiveData().observe(this, meetingModels -> adapter.submitList(meetingModels));
-    }
-
-    private void initRoomFilterRecyclerView() {
         final RoomFilterAdapter roomAdapter = new RoomFilterAdapter(this);
-        final RecyclerView recyclerViewRoom = findViewById(R.id.meeting_rv_rooms);
+        recyclerViewRoom = findViewById(R.id.meeting_rv_rooms);
         recyclerViewRoom.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerViewRoom.setAdapter(roomAdapter);
 
-        viewModel.getRoomFilterModelLiveData().observe(this, roomFilterModel -> {
-            roomAdapter.submitList(roomFilterModel.getRoomFilterItemModels());
-
-            changeVisibilityWithAnimation(recyclerViewRoom, roomFilterModel.isRoomFilterVisible());
-        });
-    }
-
-    private void initHourFilterRecyclerView() {
         final HourFilterAdapter hourAdapter = new HourFilterAdapter(this);
-        final RecyclerView recyclerViewHours = findViewById(R.id.meeting_rv_hours);
-        recyclerViewHours.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        recyclerViewHours.setAdapter(hourAdapter);
+        recyclerViewHour = findViewById(R.id.meeting_rv_hours);
+        recyclerViewHour.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        recyclerViewHour.setAdapter(hourAdapter);
 
-        viewModel.getHourFilterModelLiveData().observe(this, hourFilterModel -> {
-            hourAdapter.submitList(hourFilterModel.getHourFilterItemModels());
-
-            changeVisibilityWithAnimation(recyclerViewHours, hourFilterModel.isHourFilterVisible());
+        viewModel.getMeetingViewStateLiveData().observe(this, meetingViewState -> {
+            adapter.submitList(meetingViewState.getMeetingViewStateItems());
+            roomAdapter.submitList(meetingViewState.getMeetingViewStateRoomFilterItems());
+            hourAdapter.submitList(meetingViewState.getMeetingViewStateHourFilterItems());
         });
     }
 
     private void initSortingDialog() {
-        viewModel.getViewActionLiveData().observe(this, viewAction -> {
-            if (viewAction instanceof DisplaySortingDialogViewAction) {
-                DisplaySortingDialogViewAction casted = (DisplaySortingDialogViewAction) viewAction;
+        viewModel.getViewActionLiveData().observe(this, meetingViewAction -> {
+            if (meetingViewAction instanceof DisplaySortingDialogMeetingViewAction) {
+                DisplaySortingDialogMeetingViewAction casted = (DisplaySortingDialogMeetingViewAction) meetingViewAction;
 
                 SortDialogFragment.newInstance(
                     casted.getAlphabeticSortingType(),
@@ -119,6 +110,7 @@ public class MeetingActivity extends AppCompatActivity implements
             }
         });
 
+        // TODO REPO
         viewModel.getAlphabeticSortingTypeLiveData().observe(this, alphabeticSortingType -> {
             SortDialogFragment sortDialogFragment = getSortDialogFragment();
 
@@ -167,10 +159,10 @@ public class MeetingActivity extends AppCompatActivity implements
             viewModel.displaySortingDialog();
             return true;
         } else if (itemId == R.id.meeting_menu_filter_room) {
-            viewModel.invertRoomFilterVisibility();
+            changeVisibilityWithAnimation(recyclerViewRoom);
             return true;
         } else if (itemId == R.id.meeting_menu_filter_hour) {
-            viewModel.invertHourFilterVisibility();
+            changeVisibilityWithAnimation(recyclerViewHour);
             return true;
         }
 
@@ -178,9 +170,20 @@ public class MeetingActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onMeetingClicked(int meetingId) {
-        Toast.makeText(this, "Meeting clicked ! Id = " + meetingId, Toast.LENGTH_SHORT)
-            .show();
+    public void onMeetingClicked(@NonNull View imageView, @NonNull View textView, int meetingId) {
+        Intent intent = MeetingDetailActivity.navigate(this, meetingId);
+
+        Pair<View, String> imageViewPair = new Pair<>(imageView, imageView.getTransitionName());
+        Pair<View, String> textViewPair = new Pair<>(textView, textView.getTransitionName());
+
+        @SuppressWarnings("unchecked")
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+            this,
+            imageViewPair,
+            textViewPair
+        );
+
+        startActivity(intent, options.toBundle());
     }
 
     @Override
@@ -198,6 +201,7 @@ public class MeetingActivity extends AppCompatActivity implements
         viewModel.setHourSelected(hour);
     }
 
+    // TODO NINO REFACTO
     @Override
     public void onAlphabeticSortingClicked() {
         viewModel.changeAlphabeticSorting();
@@ -224,19 +228,18 @@ public class MeetingActivity extends AppCompatActivity implements
     }
 
     // A small utility function that invert visibility of a View with a nice animation !
-    private void changeVisibilityWithAnimation(@NonNull View view, boolean isVisible) {
+    private void changeVisibilityWithAnimation(@NonNull View view) {
         boolean isViewActuallyVisible = view.getVisibility() == View.VISIBLE;
 
-        if (isVisible && !isViewActuallyVisible) {
-            // This is the "magical part" that makes the animation automatic
-            TransitionManager.beginDelayedTransition(rootView);
+        TransitionManager.endTransitions(rootView);
 
-            view.setVisibility(View.VISIBLE);
-        } else if (!isVisible && isViewActuallyVisible) {
-            // This is the "magical part" that makes the animation automatic
-            TransitionManager.beginDelayedTransition(rootView);
+        // This is the "magical part" that makes the animation automatic
+        TransitionManager.beginDelayedTransition(rootView);
 
+        if (isViewActuallyVisible) {
             view.setVisibility(View.GONE);
+        } else {
+            view.setVisibility(View.VISIBLE);
         }
     }
 }

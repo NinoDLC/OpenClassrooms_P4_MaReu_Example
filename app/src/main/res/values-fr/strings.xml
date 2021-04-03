@@ -23,6 +23,8 @@
     <string name="empty" />
     <string name="create_meeting_title">Créer une nouvelle réunion</string>
 
+    <string name="detail_meeting_title">Détails de la réunion</string>
+
     <string name="filter_room">Filtrer par salle</string>
     <string name="filter_hour">Filtrer par heure</string>
 
@@ -36,4 +38,17 @@
     <string name="sorting_chronological_inverted_sorted">Tri par date : inversé</string>
 
     <string name="content_description_add">Ajouter</string>
+
+    <string name="meeting_finished">La réunion est terminée</string>
+    <string name="meeting_ongoing">Réunion en cours…</string>
+
+    <plurals name="meeting_in_hours">
+        <item quantity="one">La réunion est prévue dans %d heure</item>
+        <item quantity="other">La réunion est prévue dans %d heures</item>
+    </plurals>
+
+    <plurals name="meeting_in_minutes">
+        <item quantity="one">La réunion est prévue dans %d minute</item>
+        <item quantity="other">La réunion est prévue dans %d minutes</item>
+    </plurals>
 </resources>

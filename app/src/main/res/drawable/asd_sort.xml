@@ -1,43 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <animated-selector
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/sort_none"
         android:drawable="@drawable/ic_sort_none"
         app:state_invert_sorted="false"
-        app:state_sorted="false"
-        />
+        app:state_sorted="false" />
 
     <item
         android:id="@+id/sort"
         android:drawable="@drawable/ic_sort"
-        app:state_sorted="true"
-        />
+        app:state_sorted="true" />
 
     <item
         android:id="@+id/sort_inverted"
         android:drawable="@drawable/ic_sort_inverted"
-        app:state_invert_sorted="true"
-        />
+        app:state_invert_sorted="true" />
 
     <transition
         android:drawable="@drawable/avd_not_sorted_to_sorted"
         android:fromId="@id/sort_none"
-        android:toId="@id/sort"
-        />
+        android:toId="@id/sort" />
 
     <transition
         android:drawable="@drawable/avd_sorted_to_invert_sorted"
         android:fromId="@id/sort"
-        android:toId="@id/sort_inverted"
-        />
+        android:toId="@id/sort_inverted" />
 
     <transition
         android:drawable="@drawable/avd_invert_sorted_to_not_sorted"
         android:fromId="@id/sort_inverted"
-        android:toId="@id/sort_none"
-        />
+        android:toId="@id/sort_none" />
 </animated-selector>

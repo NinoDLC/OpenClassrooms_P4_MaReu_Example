@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    >
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/create_meeting_item_iv_icon"
@@ -16,8 +15,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/ic_room_mario"
-        />
+        tools:src="@drawable/ic_room_mario" />
 
     <TextView
         android:id="@+id/create_meeting_item_tv_name"
@@ -27,6 +25,5 @@
         app:layout_constraintBottom_toBottomOf="@id/create_meeting_item_iv_icon"
         app:layout_constraintStart_toEndOf="@id/create_meeting_item_iv_icon"
         app:layout_constraintTop_toTopOf="@id/create_meeting_item_iv_icon"
-        tools:text="Mario"
-        />
+        tools:text="Mario" />
 </androidx.constraintlayout.widget.ConstraintLayout>

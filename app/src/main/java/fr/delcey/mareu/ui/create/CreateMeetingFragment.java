@@ -55,17 +55,17 @@ public class CreateMeetingFragment extends Fragment {
         initTopicEditText(viewModel, topicEditText);
 
         EditText participantsEditText = view.findViewById(R.id.create_meeting_et_participants);
-        initParticipantsEditText(viewModel,participantsEditText);
+        initParticipantsEditText(viewModel, participantsEditText);
 
         TimePicker timePicker = view.findViewById(R.id.create_meeting_tp);
-        initTimePicker(viewModel,timePicker);
+        initTimePicker(viewModel, timePicker);
 
         FloatingActionButton validateButton = view.findViewById(R.id.create_meeting_fab_validate);
-        initValidateButton(viewModel,validateButton);
+        initValidateButton(viewModel, validateButton);
 
         Spinner roomSpinner = view.findViewById(R.id.create_meeting_spi_room);
         TextView roomSpinnerError = view.findViewById(R.id.create_meeting_tv_room_error);
-        initRoomSpinner(viewModel,roomSpinner, viewModel.init().getSpinnerData());
+        initRoomSpinner(viewModel, roomSpinner, viewModel.init().getSpinnerData());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             viewModel.setTime(timePicker.getHour(), timePicker.getMinute());

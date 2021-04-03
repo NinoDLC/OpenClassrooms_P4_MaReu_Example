@@ -4,18 +4,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
+            android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/create_meeting_til_topic"
@@ -24,8 +21,7 @@
                 android:layout_margin="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                >
+                app:layout_constraintTop_toTopOf="parent">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/create_meeting_et_topic"
@@ -33,8 +29,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/topic"
                     android:inputType="textMultiLine"
-                    tools:text="Réunion A"
-                    />
+                    tools:text="Réunion A" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -45,8 +40,7 @@
                 android:layout_margin="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/create_meeting_til_topic"
-                >
+                app:layout_constraintTop_toBottomOf="@id/create_meeting_til_topic">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/create_meeting_et_participants"
@@ -54,8 +48,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/participants"
                     android:inputType="textMultiLine"
-                    tools:text="anthony@delcey.fr"
-                    />
+                    tools:text="anthony@delcey.fr" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -68,8 +61,7 @@
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@id/create_meeting_spi_room"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/create_meeting_spi_room"
-                />
+                app:layout_constraintTop_toTopOf="@id/create_meeting_spi_room" />
 
             <Spinner
                 android:id="@+id/create_meeting_spi_room"
@@ -78,16 +70,14 @@
                 android:layout_margin="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/create_meeting_tv_room"
-                app:layout_constraintTop_toBottomOf="@id/create_meeting_til_participants"
-                />
+                app:layout_constraintTop_toBottomOf="@id/create_meeting_til_participants" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/create_meeting_bar_room"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="create_meeting_spi_room,create_meeting_tv_room"
-                />
+                app:constraint_referenced_ids="create_meeting_spi_room,create_meeting_tv_room" />
 
             <TextView
                 android:id="@+id/create_meeting_tv_room_error"
@@ -103,8 +93,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/create_meeting_bar_room"
-                tools:visibility="visible"
-                />
+                tools:visibility="visible" />
 
             <TimePicker
                 android:id="@+id/create_meeting_tp"
@@ -113,8 +102,7 @@
                 android:padding="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/create_meeting_tv_room_error"
-                />
+                app:layout_constraintTop_toBottomOf="@id/create_meeting_tv_room_error" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
@@ -126,6 +114,5 @@
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
         android:contentDescription="@string/content_description_add"
-        android:src="@drawable/ic_check_white_24dp"
-        />
+        android:src="@drawable/ic_check_white_24dp" />
 </FrameLayout>

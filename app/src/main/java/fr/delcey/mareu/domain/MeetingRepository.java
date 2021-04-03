@@ -1,13 +1,13 @@
 package fr.delcey.mareu.domain;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import fr.delcey.mareu.BuildConfig;
 import fr.delcey.mareu.domain.pojo.Meeting;

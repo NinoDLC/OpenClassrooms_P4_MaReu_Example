@@ -4,6 +4,7 @@ import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+import androidx.core.util.Pair;
 import androidx.lifecycle.MutableLiveData;
 
 import org.junit.Before;
@@ -15,13 +16,15 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import fr.delcey.mareu.R;
 import fr.delcey.mareu.domain.MeetingRepository;
 import fr.delcey.mareu.domain.pojo.Meeting;
 import fr.delcey.mareu.domain.pojo.Room;
-import fr.delcey.mareu.ui.meetings.meeting.MeetingViewState;
+import fr.delcey.mareu.ui.meetings.hour_filter.MeetingViewStateHourFilterItem;
+import fr.delcey.mareu.ui.meetings.list.MeetingViewStateItem;
 import fr.delcey.mareu.utils.LiveDataTestUtils;
 
 import static org.junit.Assert.assertEquals;
@@ -69,15 +72,22 @@ public class MeetingViewModelTest {
         provideResourcesFor4Meetings();
 
         // When
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(4, result.size());
+        // Meetings
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(4, result.getMeetingViewStateItems().size());
 
-        assertFirstMeetingIsInPosition(result, 0);
-        assertSecondMeetingIsInPosition(result, 1);
-        assertThirdMeetingIsInPosition(result, 2);
-        assertFourthMeetingIsInPosition(result, 3);
+        assertFirstMeetingIsInPosition(results, 0);
+        assertSecondMeetingIsInPosition(results, 1);
+        assertThirdMeetingIsInPosition(results, 2);
+        assertFourthMeetingIsInPosition(results, 3);
+
+        // Hour
+        List<MeetingViewStateHourFilterItem> hourFilterItems = result.getMeetingViewStateHourFilterItems();
+        assertEquals(17, hourFilterItems.size());
+
         verifyNoMoreInteractions(repository);
     }
 
@@ -98,12 +108,27 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.setHourSelected("18:00");
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(1, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(1, results.size());
+        assertSecondMeetingIsInPosition(results, 0);
 
-        assertSecondMeetingIsInPosition(result, 0);
+        // Hour
+        List<MeetingViewStateHourFilterItem> hourFilterItems = result.getMeetingViewStateHourFilterItems();
+        assertHourFilterItems(
+            hourFilterItems,
+            new Pair<>(
+                12,
+                new MeetingViewStateHourFilterItem(
+                    "18:00",
+                    R.drawable.shape_hour_selection_alone,
+                    android.R.color.black
+                )
+            )
+        );
+
         verifyNoMoreInteractions(repository);
     }
 
@@ -120,12 +145,27 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.setHourSelected("14:00");
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(1, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(1, results.size());
+        assertThirdMeetingIsInPosition(results, 0);
 
-        assertThirdMeetingIsInPosition(result, 0);
+        // Hour
+        List<MeetingViewStateHourFilterItem> hourFilterItems = result.getMeetingViewStateHourFilterItems();
+        assertHourFilterItems(
+            hourFilterItems,
+            new Pair<>(
+                8,
+                new MeetingViewStateHourFilterItem(
+                    "14:00",
+                    R.drawable.shape_hour_selection_alone,
+                    android.R.color.black
+                )
+            )
+        );
+
         verifyNoMoreInteractions(repository);
     }
 
@@ -141,14 +181,15 @@ public class MeetingViewModelTest {
         provideResourcesFor4Meetings();
 
         // When
-        viewModel.setHourSelected("12:00");
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        viewModel.setHourSelected("13:00");
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(2, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(2, results.size());
+        assertFirstMeetingIsInPosition(results, 0);
+        assertFourthMeetingIsInPosition(results, 1);
 
-        assertFirstMeetingIsInPosition(result, 0);
-        assertFourthMeetingIsInPosition(result, 1);
         verifyNoMoreInteractions(repository);
     }
 
@@ -166,13 +207,36 @@ public class MeetingViewModelTest {
         // When
         viewModel.setHourSelected("18:00");
         viewModel.setHourSelected("14:00");
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(2, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(2, results.size());
+        assertSecondMeetingIsInPosition(results, 0);
+        assertThirdMeetingIsInPosition(results, 1);
 
-        assertSecondMeetingIsInPosition(result, 0);
-        assertThirdMeetingIsInPosition(result, 1);
+        // Hour
+        List<MeetingViewStateHourFilterItem> hourFilterItems = result.getMeetingViewStateHourFilterItems();
+        assertHourFilterItems(
+            hourFilterItems,
+            new Pair<>(
+                8,
+                new MeetingViewStateHourFilterItem(
+                    "14:00",
+                    R.drawable.shape_hour_selection_alone,
+                    android.R.color.black
+                )
+            ),
+            new Pair<>(
+                12,
+                new MeetingViewStateHourFilterItem(
+                    "18:00",
+                    R.drawable.shape_hour_selection_alone,
+                    android.R.color.black
+                )
+            )
+        );
+
         verifyNoMoreInteractions(repository);
     }
 
@@ -191,12 +255,27 @@ public class MeetingViewModelTest {
         viewModel.setHourSelected("18:00");
         viewModel.setHourSelected("14:00");
         viewModel.setHourSelected("14:00");
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(1, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(1, results.size());
+        assertSecondMeetingIsInPosition(results, 0);
 
-        assertSecondMeetingIsInPosition(result, 0);
+        // Hour
+        List<MeetingViewStateHourFilterItem> hourFilterItems = result.getMeetingViewStateHourFilterItems();
+        assertHourFilterItems(
+            hourFilterItems,
+            new Pair<>(
+                12,
+                new MeetingViewStateHourFilterItem(
+                    "18:00",
+                    R.drawable.shape_hour_selection_alone,
+                    android.R.color.black
+                )
+            )
+        );
+
         verifyNoMoreInteractions(repository);
     }
 
@@ -216,15 +295,20 @@ public class MeetingViewModelTest {
         viewModel.setHourSelected("14:00");
         viewModel.setHourSelected("14:00");
         viewModel.setHourSelected("18:00");
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(4, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(4, results.size());
+        assertFirstMeetingIsInPosition(results, 0);
+        assertSecondMeetingIsInPosition(results, 1);
+        assertThirdMeetingIsInPosition(results, 2);
+        assertFourthMeetingIsInPosition(results, 3);
 
-        assertFirstMeetingIsInPosition(result, 0);
-        assertSecondMeetingIsInPosition(result, 1);
-        assertThirdMeetingIsInPosition(result, 2);
-        assertFourthMeetingIsInPosition(result, 3);
+        // Hour
+        List<MeetingViewStateHourFilterItem> hourFilterItems = result.getMeetingViewStateHourFilterItems();
+        assertHourFilterItems(hourFilterItems);
+
         verifyNoMoreInteractions(repository);
     }
 
@@ -242,10 +326,26 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.setHourSelected("08:00");
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(0, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(0, results.size());
+
+        // Hour
+        List<MeetingViewStateHourFilterItem> hourFilterItems = result.getMeetingViewStateHourFilterItems();
+        assertHourFilterItems(
+            hourFilterItems,
+            new Pair<>(
+                2,
+                new MeetingViewStateHourFilterItem(
+                    "08:00",
+                    R.drawable.shape_hour_selection_alone,
+                    android.R.color.black
+                )
+            )
+        );
+
         verifyNoMoreInteractions(repository);
     }
 
@@ -262,11 +362,35 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.setHourSelected("08:00");
-        viewModel.setHourSelected("20:00");
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        viewModel.setHourSelected("09:00");
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(0, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(0, results.size());
+
+        // Hour
+        List<MeetingViewStateHourFilterItem> hourFilterItems = result.getMeetingViewStateHourFilterItems();
+        assertHourFilterItems(
+            hourFilterItems,
+            new Pair<>(
+                2,
+                new MeetingViewStateHourFilterItem(
+                    "08:00",
+                    R.drawable.shape_hour_selection_start,
+                    android.R.color.white
+                )
+            ),
+            new Pair<>(
+                3,
+                new MeetingViewStateHourFilterItem(
+                    "09:00",
+                    R.drawable.shape_hour_selection_end,
+                    android.R.color.white
+                )
+            )
+        );
+
         verifyNoMoreInteractions(repository);
     }
 
@@ -283,12 +407,44 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.setHourSelected("08:00");
-        viewModel.setHourSelected("20:00");
-        viewModel.setHourSelected("08:00");
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        viewModel.setHourSelected("09:00");
+        viewModel.setHourSelected("10:00");
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(0, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(0, results.size());
+
+        // Hour
+        List<MeetingViewStateHourFilterItem> hourFilterItems = result.getMeetingViewStateHourFilterItems();
+        assertHourFilterItems(
+            hourFilterItems,
+            new Pair<>(
+                2,
+                new MeetingViewStateHourFilterItem(
+                    "08:00",
+                    R.drawable.shape_hour_selection_start,
+                    android.R.color.white
+                )
+            ),
+            new Pair<>(
+                3,
+                new MeetingViewStateHourFilterItem(
+                    "09:00",
+                    R.drawable.shape_hour_selection_middle,
+                    android.R.color.white
+                )
+            ),
+            new Pair<>(
+                4,
+                new MeetingViewStateHourFilterItem(
+                    "10:00",
+                    R.drawable.shape_hour_selection_end,
+                    android.R.color.white
+                )
+            )
+        );
+
         verifyNoMoreInteractions(repository);
     }
 
@@ -309,12 +465,13 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.setRoomSelected(Room.MEWTWO);
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(1, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(1, results.size());
 
-        assertThirdMeetingIsInPosition(result, 0);
+        assertThirdMeetingIsInPosition(results, 0);
         verifyNoMoreInteractions(repository);
     }
 
@@ -331,12 +488,13 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.setRoomSelected(Room.PEACH);
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(1, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(1, results.size());
 
-        assertFirstMeetingIsInPosition(result, 0);
+        assertFirstMeetingIsInPosition(results, 0);
         verifyNoMoreInteractions(repository);
     }
 
@@ -353,13 +511,14 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.setRoomSelected(Room.DK);
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(2, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(2, results.size());
 
-        assertSecondMeetingIsInPosition(result, 0);
-        assertFourthMeetingIsInPosition(result, 1);
+        assertSecondMeetingIsInPosition(results, 0);
+        assertFourthMeetingIsInPosition(results, 1);
         verifyNoMoreInteractions(repository);
     }
 
@@ -377,13 +536,14 @@ public class MeetingViewModelTest {
         // When
         viewModel.setRoomSelected(Room.PEACH);
         viewModel.setRoomSelected(Room.MEWTWO);
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(2, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(2, results.size());
 
-        assertFirstMeetingIsInPosition(result, 0);
-        assertThirdMeetingIsInPosition(result, 1);
+        assertFirstMeetingIsInPosition(results, 0);
+        assertThirdMeetingIsInPosition(results, 1);
         verifyNoMoreInteractions(repository);
     }
 
@@ -402,12 +562,13 @@ public class MeetingViewModelTest {
         viewModel.setRoomSelected(Room.PEACH);
         viewModel.setRoomSelected(Room.MEWTWO);
         viewModel.setRoomSelected(Room.PEACH);
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(1, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(1, results.size());
 
-        assertThirdMeetingIsInPosition(result, 0);
+        assertThirdMeetingIsInPosition(results, 0);
         verifyNoMoreInteractions(repository);
     }
 
@@ -427,15 +588,16 @@ public class MeetingViewModelTest {
         viewModel.setRoomSelected(Room.PEACH);
         viewModel.setRoomSelected(Room.MEWTWO);
         viewModel.setRoomSelected(Room.PEACH);
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(4, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(4, results.size());
 
-        assertFirstMeetingIsInPosition(result, 0);
-        assertSecondMeetingIsInPosition(result, 1);
-        assertThirdMeetingIsInPosition(result, 2);
-        assertFourthMeetingIsInPosition(result, 3);
+        assertFirstMeetingIsInPosition(results, 0);
+        assertSecondMeetingIsInPosition(results, 1);
+        assertThirdMeetingIsInPosition(results, 2);
+        assertFourthMeetingIsInPosition(results, 3);
         verifyNoMoreInteractions(repository);
     }
 
@@ -452,10 +614,11 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.setRoomSelected(Room.LINK);
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(0, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(0, results.size());
         verifyNoMoreInteractions(repository);
     }
 
@@ -473,10 +636,11 @@ public class MeetingViewModelTest {
         // When
         viewModel.setRoomSelected(Room.LINK);
         viewModel.setRoomSelected(Room.LUIGI);
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(0, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(0, results.size());
         verifyNoMoreInteractions(repository);
     }
 
@@ -495,10 +659,11 @@ public class MeetingViewModelTest {
         viewModel.setRoomSelected(Room.LINK);
         viewModel.setRoomSelected(Room.LUIGI);
         viewModel.setRoomSelected(Room.LINK);
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(0, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(0, results.size());
         verifyNoMoreInteractions(repository);
     }
     // endregion
@@ -521,15 +686,16 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.changeAlphabeticSorting();
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(4, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(4, results.size());
 
-        assertFirstMeetingIsInPosition(result, 0);
-        assertFourthMeetingIsInPosition(result, 1);
-        assertSecondMeetingIsInPosition(result, 2);
-        assertThirdMeetingIsInPosition(result, 3);
+        assertFirstMeetingIsInPosition(results, 0);
+        assertFourthMeetingIsInPosition(results, 1);
+        assertSecondMeetingIsInPosition(results, 2);
+        assertThirdMeetingIsInPosition(results, 3);
         verifyNoMoreInteractions(repository);
     }
 
@@ -547,15 +713,16 @@ public class MeetingViewModelTest {
         // When
         viewModel.changeAlphabeticSorting();
         viewModel.changeAlphabeticSorting();
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(4, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(4, results.size());
 
-        assertThirdMeetingIsInPosition(result, 0);
-        assertSecondMeetingIsInPosition(result, 1);
-        assertFourthMeetingIsInPosition(result, 2);
-        assertFirstMeetingIsInPosition(result, 3);
+        assertThirdMeetingIsInPosition(results, 0);
+        assertSecondMeetingIsInPosition(results, 1);
+        assertFourthMeetingIsInPosition(results, 2);
+        assertFirstMeetingIsInPosition(results, 3);
         verifyNoMoreInteractions(repository);
     }
 
@@ -574,15 +741,16 @@ public class MeetingViewModelTest {
         viewModel.changeAlphabeticSorting();
         viewModel.changeAlphabeticSorting();
         viewModel.changeAlphabeticSorting();
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(4, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(4, results.size());
 
-        assertFirstMeetingIsInPosition(result, 0);
-        assertSecondMeetingIsInPosition(result, 1);
-        assertThirdMeetingIsInPosition(result, 2);
-        assertFourthMeetingIsInPosition(result, 3);
+        assertFirstMeetingIsInPosition(results, 0);
+        assertSecondMeetingIsInPosition(results, 1);
+        assertThirdMeetingIsInPosition(results, 2);
+        assertFourthMeetingIsInPosition(results, 3);
         verifyNoMoreInteractions(repository);
     }
 
@@ -602,15 +770,16 @@ public class MeetingViewModelTest {
 
         // When
         viewModel.changeChronologicalSorting();
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(4, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(4, results.size());
 
-        assertFirstMeetingIsInPosition(result, 0);
-        assertFourthMeetingIsInPosition(result, 1);
-        assertThirdMeetingIsInPosition(result, 2);
-        assertSecondMeetingIsInPosition(result, 3);
+        assertFirstMeetingIsInPosition(results, 0);
+        assertFourthMeetingIsInPosition(results, 1);
+        assertThirdMeetingIsInPosition(results, 2);
+        assertSecondMeetingIsInPosition(results, 3);
         verifyNoMoreInteractions(repository);
     }
 
@@ -628,16 +797,16 @@ public class MeetingViewModelTest {
         // When
         viewModel.changeChronologicalSorting();
         viewModel.changeChronologicalSorting();
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(4, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(4, results.size());
 
-
-        assertSecondMeetingIsInPosition(result, 0);
-        assertThirdMeetingIsInPosition(result, 1);
-        assertFourthMeetingIsInPosition(result, 2);
-        assertFirstMeetingIsInPosition(result, 3);
+        assertSecondMeetingIsInPosition(results, 0);
+        assertThirdMeetingIsInPosition(results, 1);
+        assertFourthMeetingIsInPosition(results, 2);
+        assertFirstMeetingIsInPosition(results, 3);
         verifyNoMoreInteractions(repository);
     }
 
@@ -656,15 +825,16 @@ public class MeetingViewModelTest {
         viewModel.changeChronologicalSorting();
         viewModel.changeChronologicalSorting();
         viewModel.changeChronologicalSorting();
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(4, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(4, results.size());
 
-        assertFirstMeetingIsInPosition(result, 0);
-        assertSecondMeetingIsInPosition(result, 1);
-        assertThirdMeetingIsInPosition(result, 2);
-        assertFourthMeetingIsInPosition(result, 3);
+        assertFirstMeetingIsInPosition(results, 0);
+        assertSecondMeetingIsInPosition(results, 1);
+        assertThirdMeetingIsInPosition(results, 2);
+        assertFourthMeetingIsInPosition(results, 3);
         verifyNoMoreInteractions(repository);
     }
 
@@ -684,12 +854,13 @@ public class MeetingViewModelTest {
         // When
         viewModel.setRoomSelected(Room.DK);
         viewModel.setHourSelected("18:00");
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(1, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(1, results.size());
 
-        assertSecondMeetingIsInPosition(result, 0);
+        assertSecondMeetingIsInPosition(results, 0);
         verifyNoMoreInteractions(repository);
     }
 
@@ -707,13 +878,14 @@ public class MeetingViewModelTest {
         // When
         viewModel.changeAlphabeticSorting();
         viewModel.setRoomSelected(Room.DK);
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(2, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(2, results.size());
 
-        assertFourthMeetingIsInPosition(result, 0);
-        assertSecondMeetingIsInPosition(result, 1);
+        assertFourthMeetingIsInPosition(results, 0);
+        assertSecondMeetingIsInPosition(results, 1);
         verifyNoMoreInteractions(repository);
     }
 
@@ -731,15 +903,16 @@ public class MeetingViewModelTest {
         // When
         viewModel.setRoomSelected(Room.DK);
         viewModel.setHourSelected("18:00");
-        viewModel.setHourSelected("12:00");
+        viewModel.setHourSelected("13:00");
         viewModel.changeChronologicalSorting();
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(2, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(2, results.size());
 
-        assertFourthMeetingIsInPosition(result, 0);
-        assertSecondMeetingIsInPosition(result, 1);
+        assertFourthMeetingIsInPosition(results, 0);
+        assertSecondMeetingIsInPosition(results, 1);
         verifyNoMoreInteractions(repository);
     }
 
@@ -757,16 +930,17 @@ public class MeetingViewModelTest {
         // When
         viewModel.setRoomSelected(Room.DK);
         viewModel.setHourSelected("18:00");
-        viewModel.setHourSelected("12:00");
+        viewModel.setHourSelected("13:00");
         viewModel.changeChronologicalSorting();
         viewModel.changeChronologicalSorting();
-        List<MeetingViewState> result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingModelsLiveData());
+        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getMeetingViewStateLiveData());
 
         // Then
-        assertEquals(2, result.size());
+        List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
+        assertEquals(2, results.size());
 
-        assertSecondMeetingIsInPosition(result, 0);
-        assertFourthMeetingIsInPosition(result, 1);
+        assertSecondMeetingIsInPosition(results, 0);
+        assertFourthMeetingIsInPosition(results, 1);
         verifyNoMoreInteractions(repository);
     }
 
@@ -805,7 +979,7 @@ public class MeetingViewModelTest {
         participants.add("participant1_1@gmail.com");
         participants.add("participant1_2@outlook.com");
         participants.add("participant1_3@subdomain.domain");
-        meetings.add(new Meeting(0, "First topic", LocalTime.of(12, 50), participants, Room.PEACH));
+        meetings.add(new Meeting(0, "First topic", LocalTime.of(13, 10), participants, Room.PEACH));
 
         List<String> participants2 = new ArrayList<>();
         participants2.add("participant2_1@gmail.com");
@@ -836,7 +1010,7 @@ public class MeetingViewModelTest {
             resources.getString(
                 R.string.meeting_title,
                 "First topic",
-                "12:50",
+                "13:10",
                 "Peach room"
             )
         ).willReturn("First mapped title");
@@ -868,32 +1042,95 @@ public class MeetingViewModelTest {
     // endregion
 
     // region Assert
-    private void assertFirstMeetingIsInPosition(@NonNull List<MeetingViewState> result, int position) {
-        assertEquals(result.get(position).getTitle(), "First mapped title");
+    private void assertFirstMeetingIsInPosition(@NonNull List<MeetingViewStateItem> result, int position) {
+        assertEquals(result.get(position).getTopic(), "First mapped title");
         assertEquals(result.get(position).getMeetingIcon(), Room.PEACH.getDrawableResIcon());
         assertEquals(result.get(position).getMeetingId(), 0);
         assertEquals(result.get(position).getParticipants(), "participant1_1@gmail.com, participant1_2@outlook.com, participant1_3@subdomain.domain");
     }
 
-    private void assertSecondMeetingIsInPosition(@NonNull List<MeetingViewState> result, int position) {
-        assertEquals(result.get(position).getTitle(), "Second mapped title");
+    private void assertSecondMeetingIsInPosition(@NonNull List<MeetingViewStateItem> result, int position) {
+        assertEquals(result.get(position).getTopic(), "Second mapped title");
         assertEquals(result.get(position).getMeetingIcon(), Room.DK.getDrawableResIcon());
         assertEquals(result.get(position).getMeetingId(), 1);
         assertEquals(result.get(position).getParticipants(), "participant2_1@gmail.com, participant2_2@outlook.com, participant2_3@subdomain.domain");
     }
 
-    private void assertThirdMeetingIsInPosition(@NonNull List<MeetingViewState> result, int position) {
-        assertEquals(result.get(position).getTitle(), "Third mapped title");
+    private void assertThirdMeetingIsInPosition(@NonNull List<MeetingViewStateItem> result, int position) {
+        assertEquals(result.get(position).getTopic(), "Third mapped title");
         assertEquals(result.get(position).getMeetingIcon(), Room.MEWTWO.getDrawableResIcon());
         assertEquals(result.get(position).getMeetingId(), 2);
         assertEquals(result.get(position).getParticipants(), "participant3_1@gmail.com, participant3_2@outlook.com, participant3_3@subdomain.domain");
     }
 
-    private void assertFourthMeetingIsInPosition(@NonNull List<MeetingViewState> result, int position) {
-        assertEquals(result.get(position).getTitle(), "Fourth mapped title");
+    private void assertFourthMeetingIsInPosition(@NonNull List<MeetingViewStateItem> result, int position) {
+        assertEquals(result.get(position).getTopic(), "Fourth mapped title");
         assertEquals(result.get(position).getMeetingIcon(), Room.DK.getDrawableResIcon());
         assertEquals(result.get(position).getMeetingId(), 3);
         assertEquals(result.get(position).getParticipants(), "participant4_1@gmail.com, participant4_2@outlook.com, participant4_3@subdomain.domain");
+    }
+
+    // Java is so hard to work with considering collections...
+    @SafeVarargs
+    @SuppressWarnings("ConstantConditions")
+    private final void assertHourFilterItems(
+        @NonNull List<MeetingViewStateHourFilterItem> hourFilterItems,
+        Pair<Integer, MeetingViewStateHourFilterItem>... compareByPositionItems
+    ) {
+        assertEquals(17, hourFilterItems.size());
+
+        int assertionsDone = 0;
+
+        for (Pair<Integer, MeetingViewStateHourFilterItem> compareByPositionItem : compareByPositionItems) {
+            int foundCount = 0;
+
+            for (int i = 0; i < hourFilterItems.size(); i++) {
+                MeetingViewStateHourFilterItem hourFilterItem = hourFilterItems.get(i);
+
+
+                if (i == compareByPositionItem.first
+                    && hourFilterItem.equals(compareByPositionItem.second)) {
+                    foundCount++;
+                }
+            }
+
+            if (foundCount == 0) {
+                throw new AssertionError(
+                    "Couldn't find item "
+                        + compareByPositionItem.second
+                        + " at position "
+                        + compareByPositionItem.first
+                        + ". Difference(s) between expected values = "
+                        + Arrays.toString(compareByPositionItems)
+                        + " and items = "
+                        + hourFilterItems
+                );
+            } else if (foundCount > 1) {
+                throw new AssertionError(
+                    "Found too many matches for item "
+                        + compareByPositionItem.second
+                        + " at position "
+                        + compareByPositionItem.first
+                        + ", foundCount = "
+                        + foundCount
+                        + ". Difference(s) between expected values = "
+                        + Arrays.toString(compareByPositionItems)
+                        + " and items = "
+                        + hourFilterItems
+                );
+            } else {
+                assertionsDone++;
+            }
+        }
+
+        if (assertionsDone != compareByPositionItems.length) {
+            throw new AssertionError(
+                "Difference(s) between expected values = "
+                    + Arrays.toString(compareByPositionItems)
+                    + " and items = "
+                    + hourFilterItems
+            );
+        }
     }
     // endregion
 }

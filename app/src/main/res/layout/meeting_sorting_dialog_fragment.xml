@@ -5,16 +5,14 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:minWidth="300dp"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/meeting_sorting_dialog_ll_alphabetical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/meeting_sorting_dialog_iv_alphabetical"
@@ -26,8 +24,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/meeting_sorting_dialog_tv_alphabetical"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/meeting_sorting_dialog_tv_alphabetical"
@@ -39,8 +36,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/meeting_sorting_dialog_iv_alphabetical"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            app:layout_constraintTop_toTopOf="parent" />
     </LinearLayout>
 
     <LinearLayout
@@ -48,8 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/meeting_sorting_dialog_iv_chronological"
@@ -57,8 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:importantForAccessibility="no"
-            android:src="@drawable/asd_sort"
-            />
+            android:src="@drawable/asd_sort" />
 
         <TextView
             android:id="@+id/meeting_sorting_dialog_tv_chronological"
@@ -66,7 +60,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:gravity="start"
-            android:text="@string/sorting_chronological_none"
-            />
+            android:text="@string/sorting_chronological_none" />
     </LinearLayout>
 </LinearLayout>

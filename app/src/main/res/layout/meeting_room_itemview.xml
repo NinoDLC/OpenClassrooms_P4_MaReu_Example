@@ -12,5 +12,4 @@
     android:theme="@style/Theme.MaterialComponents.Light"
     app:closeIconVisible="false"
     tools:chipIcon="@drawable/ic_room_peach"
-    tools:text="Mario"
-    />
+    tools:text="Mario" />

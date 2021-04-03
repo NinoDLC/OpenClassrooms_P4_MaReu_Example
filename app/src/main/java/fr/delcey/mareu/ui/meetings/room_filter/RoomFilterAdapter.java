@@ -16,7 +16,7 @@ import com.google.android.material.chip.Chip;
 
 import fr.delcey.mareu.R;
 
-public class RoomFilterAdapter extends ListAdapter<RoomFilterItemModel, RoomFilterAdapter.ViewHolder> {
+public class RoomFilterAdapter extends ListAdapter<MeetingViewStateRoomFilterItem, RoomFilterAdapter.ViewHolder> {
 
     @NonNull
     private final OnRoomSelectedListener listener;
@@ -50,7 +50,7 @@ public class RoomFilterAdapter extends ListAdapter<RoomFilterItemModel, RoomFilt
         }
 
         public void bind(
-            @NonNull final RoomFilterItemModel roomItemModel,
+            @NonNull final MeetingViewStateRoomFilterItem roomItemModel,
             @NonNull final OnRoomSelectedListener listener
         ) {
             chip.setChipIcon(ContextCompat.getDrawable(chip.getContext(), roomItemModel.getRoom().getDrawableResIcon()));
@@ -77,14 +77,14 @@ public class RoomFilterAdapter extends ListAdapter<RoomFilterItemModel, RoomFilt
         }
     }
 
-    private static class RoomFilterAdapterDiffCallback extends DiffUtil.ItemCallback<RoomFilterItemModel> {
+    private static class RoomFilterAdapterDiffCallback extends DiffUtil.ItemCallback<MeetingViewStateRoomFilterItem> {
         @Override
-        public boolean areItemsTheSame(@NonNull RoomFilterItemModel oldItem, @NonNull RoomFilterItemModel newItem) {
+        public boolean areItemsTheSame(@NonNull MeetingViewStateRoomFilterItem oldItem, @NonNull MeetingViewStateRoomFilterItem newItem) {
             return oldItem.getRoom().equals(newItem.getRoom());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull RoomFilterItemModel oldItem, @NonNull RoomFilterItemModel newItem) {
+        public boolean areContentsTheSame(@NonNull MeetingViewStateRoomFilterItem oldItem, @NonNull MeetingViewStateRoomFilterItem newItem) {
             return oldItem.isSelected() == newItem.isSelected();
         }
     }
