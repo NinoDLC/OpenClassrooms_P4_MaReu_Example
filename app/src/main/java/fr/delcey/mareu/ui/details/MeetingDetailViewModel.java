@@ -66,8 +66,15 @@ public class MeetingDetailViewModel extends ViewModel {
         List<MeetingDetailViewState.Participant> participants = new ArrayList<>();
 
         for (String participantUrl : meeting.getParticipants()) {
+            String name;
 
-            String name = participantUrl.substring(0, participantUrl.indexOf('@'));
+            int indexOfAtSign =  participantUrl.indexOf('@');
+
+            if (indexOfAtSign != -1) {
+                name = participantUrl.substring(0,indexOfAtSign);
+            } else {
+                name = participantUrl;
+            }
 
             participants.add(new MeetingDetailViewState.Participant(name, participantUrl));
         }
