@@ -1,0 +1,90 @@
+{
+  "comment": "Sample data for hour filters",
+  "data": [
+    {
+      "background": "@drawable/shape_hour_selection_alone",
+      "textColor": "@android:color/black",
+      "text": "06:00"
+    },
+    {
+      "background": "0",
+      "textColor": "@android:color/black",
+      "text": "07:00"
+    },
+    {
+      "background": "@drawable/shape_hour_selection_start",
+      "textColor": "@android:color/white",
+      "text": "08:00"
+    },
+    {
+      "background": "@drawable/shape_hour_selection_middle",
+      "textColor": "@android:color/white",
+      "text": "09:00"
+    },
+    {
+      "background": "@drawable/shape_hour_selection_middle",
+      "textColor": "@android:color/white",
+      "text": "10:00"
+    },
+    {
+      "background": "@drawable/shape_hour_selection_end",
+      "textColor": "@android:color/white",
+      "text": "11:00"
+    },
+    {
+      "background": "0",
+      "textColor": "@android:color/black",
+      "text": "12:00"
+    },
+    {
+      "background": "0",
+      "textColor": "@android:color/black",
+      "text": "13:00"
+    },
+    {
+      "background": "@drawable/shape_hour_selection_start",
+      "textColor": "@android:color/white",
+      "text": "14:00"
+    },
+    {
+      "background": "@drawable/shape_hour_selection_end",
+      "textColor": "@android:color/white",
+      "text": "15:00"
+    },
+    {
+      "background": "0",
+      "textColor": "@android:color/black",
+      "text": "16:00"
+    },
+    {
+      "background": "0",
+      "textColor": "@android:color/black",
+      "text": "17:00"
+    },
+    {
+      "background": "0",
+      "textColor": "@android:color/black",
+      "text": "18:00"
+    },
+    {
+      "background": "0",
+      "textColor": "@android:color/black",
+      "text": "19:00"
+    },
+    {
+      "background": "0",
+      "textColor": "@android:color/black",
+      "text": "20:00"
+    },
+    {
+      "background": "0",
+      "textColor": "@android:color/black",
+      "text": "21:00"
+    },
+    {
+      "background": "0",
+      "textColor": "@android:color/black",
+      "text": "22:00"
+    }
+  ]
+}

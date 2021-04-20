@@ -6,5 +6,6 @@
     android:layout_width="48dp"
     android:layout_height="48dp"
     android:gravity="center"
-    tools:background="@drawable/shape_hour_selection_end"
-    tools:text="08:00" />
+    tools:background="@sample/hour.json/data/background"
+    tools:textColor="@sample/hour.json/data/textColor"
+    tools:text="@sample/hour.json/data/text" />

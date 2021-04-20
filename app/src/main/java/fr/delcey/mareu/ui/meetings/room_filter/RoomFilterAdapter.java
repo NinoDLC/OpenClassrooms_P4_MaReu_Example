@@ -55,6 +55,7 @@ public class RoomFilterAdapter extends ListAdapter<MeetingViewStateRoomFilterIte
         ) {
             chip.setChipIcon(ContextCompat.getDrawable(chip.getContext(), roomItemModel.getRoom().getDrawableResIcon()));
             chip.setText(roomItemModel.getRoom().getStringResName());
+            chip.setTextColor(roomItemModel.getTextColorInt());
             chip.setRippleColorResource(roomItemModel.getRoom().getColorRes());
 
             int[][] states = new int[][]{

@@ -26,17 +26,26 @@
             android:id="@+id/meeting_rv_rooms"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:paddingStart="2dp"
             android:paddingEnd="2dp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/meeting_room_itemview"
+            tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/meeting_rv_hours"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:paddingStart="2dp"
             android:paddingEnd="2dp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="16"
+            tools:listitem="@layout/meeting_hour_itemview"
+            tools:visibility="visible" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView

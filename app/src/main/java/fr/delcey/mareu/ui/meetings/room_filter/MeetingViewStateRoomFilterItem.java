@@ -1,5 +1,6 @@
 package fr.delcey.mareu.ui.meetings.room_filter;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
 import java.util.Objects;
@@ -11,16 +12,25 @@ public class MeetingViewStateRoomFilterItem {
     @NonNull
     private final Room room;
 
+    @ColorInt
+    private final int textColorInt;
+
     private final boolean isSelected;
 
-    public MeetingViewStateRoomFilterItem(@NonNull Room room, boolean isSelected) {
+    public MeetingViewStateRoomFilterItem(@NonNull Room room, @ColorInt int textColorInt, boolean isSelected) {
         this.room = room;
+        this.textColorInt = textColorInt;
         this.isSelected = isSelected;
     }
 
     @NonNull
     public Room getRoom() {
         return room;
+    }
+
+    @ColorInt
+    public int getTextColorInt() {
+        return textColorInt;
     }
 
     public boolean isSelected() {
@@ -32,13 +42,14 @@ public class MeetingViewStateRoomFilterItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MeetingViewStateRoomFilterItem that = (MeetingViewStateRoomFilterItem) o;
-        return isSelected == that.isSelected &&
+        return textColorInt == that.textColorInt &&
+            isSelected == that.isSelected &&
             room == that.room;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(room, isSelected);
+        return Objects.hash(room, textColorInt, isSelected);
     }
 
     @NonNull
@@ -46,6 +57,7 @@ public class MeetingViewStateRoomFilterItem {
     public String toString() {
         return "MeetingViewStateRoomFilterItem{" +
             "room=" + room +
+            ", textColorInt=" + textColorInt +
             ", isSelected=" + isSelected +
             '}';
     }

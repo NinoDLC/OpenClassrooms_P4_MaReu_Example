@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="colorAccent40">#80D81B60</color> <!-- 44% transparent -->
+    <color name="chipTextColor">#232323</color>
     <color name="textColor">#444</color>
     <color name="textColorSecondary">#555</color>
 

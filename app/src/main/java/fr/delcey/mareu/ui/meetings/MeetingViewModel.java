@@ -2,10 +2,12 @@ package fr.delcey.mareu.ui.meetings;
 
 import android.content.res.Resources;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -361,7 +363,19 @@ public class MeetingViewModel extends ViewModel {
             Room room = entry.getKey();
             Boolean isRoomSelected = entry.getValue();
 
-            meetingViewStateRoomFilterItems.add(new MeetingViewStateRoomFilterItem(room, isRoomSelected != null && isRoomSelected));
+            @ColorInt int textColorInt = ResourcesCompat.getColor(
+                resources,
+                isRoomSelected ? android.R.color.white : R.color.chipTextColor,
+                null
+            );
+
+            meetingViewStateRoomFilterItems.add(
+                new MeetingViewStateRoomFilterItem(
+                    room,
+                    textColorInt,
+                    isRoomSelected
+                )
+            );
         }
         return meetingViewStateRoomFilterItems;
     }

@@ -1,0 +1,50 @@
+{
+  "comment": "Sample data for meetings",
+  "data": [
+    {
+      "icon": "@drawable/ic_room_peach",
+      "text": "Réunion A - 14h00 - Peach",
+      "participants": "thea.bondy@yahoo.com, elicia.pickel@hotmail.com, maryellen.carruthers@one.com, windy.steed@hotmail.com"
+    },
+    {
+      "icon": "@drawable/ic_room_mario",
+      "text": "Réunion B - 08h00 - Mario",
+      "participants": "misti.shive@gmail.com"
+    },
+    {
+      "icon": "@drawable/ic_room_luigi",
+      "text": "Réunion C - 09:45 - Luigi",
+      "participants": "wally.streiff@gmail.com, gregg.pickel@gmail.com"
+    },
+    {
+      "icon": "@drawable/ic_room_mario",
+      "text": "Réunion D - 11:30 - Mario",
+      "participants": "morris.shive@one.com, alana.bondy@one.com, luna.carruthers@hotmail.com, elicia.kuhns@gmail.com, elmira.cannon@one.com, adah.maltos@one.com, maryellen.pickel@outlook.com, elicia.iverson@outlook.com, catherine.maltos@gmail.com, thea.bondy@one.com"
+    },
+    {
+      "icon": "@drawable/ic_room_mewtwo",
+      "text": "Réunion E - 17:45 - Mewtwo",
+      "participants": "veola.steed@gmail.com, windy.maltos@hotmail.com, veola.carruthers@gmail.com, luna.cannon@yahoo.com, veola.shive@one.com, maryellen.carruthers@outlook.com, veola.molino@gmail.com"
+    },
+    {
+      "icon": "@drawable/ic_room_wario",
+      "text": "Réunion F - 14:45 - Wario",
+      "participants": "veola.kuhns@gmail.com, alana.woolum@yahoo.com, adah.barfoot@one.com, jessie.maltos@yahoo.com, elmira.steed@yahoo.com, luna.shive@one.com, elicia.rigdon@hotmail.com"
+    },
+    {
+      "icon": "@drawable/ic_room_link",
+      "text": "Réunion G - 19:45 - Link",
+      "participants": "elicia.pickel@one.com, jessie.carruthers@one.com, elicia.pickel@hotmail.com, luna.woolum@gmail.com"
+    },
+    {
+      "icon": "@drawable/ic_room_yoshi",
+      "text": "Réunion H - 14:00 - Yoshi",
+      "participants": "wally.cannon@one.com, morris.yingst@hotmail.com, adah.carruthers@gmail.com, maryellen.streiff@yahoo.com, luna.barfoot@hotmail.com"
+    },
+    {
+      "icon": "@drawable/ic_room_dk",
+      "text": "Réunion I - 10:00 - DK",
+      "participants": "morris.carruthers@outlook.com"
+    },
+  ]
+}

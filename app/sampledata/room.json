@@ -1,0 +1,61 @@
+{
+  "comment": "Sample data for room filters",
+  "data": [
+    {
+      "checked": false,
+      "color": "#e5e5e5",
+      "icon": "@drawable/ic_room_peach",
+      "text": "Peach",
+      "textColor": "@color/chipTextColor"
+    },
+    {
+      "checked": true,
+      "color": "@color/mario",
+      "icon": "@drawable/ic_room_mario",
+      "text": "Mario",
+      "textColor": "#FFF"
+    },
+    {
+      "checked": true,
+      "color": "@color/luigi",
+      "icon": "@drawable/ic_room_luigi",
+      "text": "Luigi",
+      "textColor": "#FFF"
+    },
+    {
+      "checked": true,
+      "color": "@color/mewtwo",
+      "icon": "@drawable/ic_room_mewtwo",
+      "text": "Mewtwo",
+      "textColor": "#FFF"
+    },
+    {
+      "checked": false,
+      "color": "#e5e5e5",
+      "icon": "@drawable/ic_room_wario",
+      "text": "Wario",
+      "textColor": "@color/chipTextColor"
+    },
+    {
+      "checked": true,
+      "color": "@color/link",
+      "icon": "@drawable/ic_room_link",
+      "text": "Link",
+      "textColor": "#FFF"
+    },
+    {
+      "checked": true,
+      "color": "@color/yoshi",
+      "icon": "@drawable/ic_room_yoshi",
+      "text": "Yoshi",
+      "textColor": "#FFF"
+    },
+    {
+      "checked": true,
+      "color": "@color/dk",
+      "icon": "@drawable/ic_room_dk",
+      "text": "DK",
+      "textColor": "#FFF"
+    },
+  ]
+}

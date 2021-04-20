@@ -83,12 +83,10 @@ public class MeetingActivity extends AppCompatActivity implements
 
         final RoomFilterAdapter roomAdapter = new RoomFilterAdapter(this);
         recyclerViewRoom = findViewById(R.id.meeting_rv_rooms);
-        recyclerViewRoom.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerViewRoom.setAdapter(roomAdapter);
 
         final HourFilterAdapter hourAdapter = new HourFilterAdapter(this);
         recyclerViewHour = findViewById(R.id.meeting_rv_hours);
-        recyclerViewHour.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         recyclerViewHour.setAdapter(hourAdapter);
 
         viewModel.getMeetingViewStateLiveData().observe(this, meetingViewState -> {

@@ -11,5 +11,8 @@
     android:checkable="true"
     android:theme="@style/Theme.MaterialComponents.Light"
     app:closeIconVisible="false"
-    tools:chipIcon="@drawable/ic_room_peach"
-    tools:text="Mario" />
+    tools:checked="@sample/room.json/data/checked"
+    tools:chipBackgroundColor="@sample/room.json/data/color"
+    tools:chipIcon="@sample/room.json/data/icon"
+    tools:text="@sample/room.json/data/text"
+    tools:textColor="@sample/room.json/data/textColor" />

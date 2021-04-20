@@ -24,7 +24,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_room_peach" />
+            tools:src="@sample/meeting.json/data/icon" />
 
         <TextView
             android:id="@+id/meeting_item_tv_topic"
@@ -36,7 +36,7 @@
             app:layout_constraintEnd_toStartOf="@id/meeting_item_iv_delete"
             app:layout_constraintStart_toEndOf="@id/meeting_item_iv_room"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Réunion A - 14h00 - Peach" />
+            tools:text="@sample/meeting.json/data/text" />
 
         <TextView
             android:id="@+id/meeting_item_tv_participants"
@@ -51,7 +51,7 @@
             app:layout_constraintEnd_toStartOf="@id/meeting_item_iv_delete"
             app:layout_constraintStart_toEndOf="@id/meeting_item_iv_room"
             app:layout_constraintTop_toBottomOf="@id/meeting_item_tv_topic"
-            tools:text="javier.bergeron@gmail.com, remy.marchesseault@gmail.com, thiery.devost@gmail.com" />
+            tools:text="@sample/meeting.json/data/participants" />
 
         <ImageView
             android:id="@+id/meeting_item_iv_delete"
