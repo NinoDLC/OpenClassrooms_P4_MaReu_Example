@@ -47,6 +47,15 @@ public class CreateMeetingViewModel extends ViewModel {
         this.resources = resources;
         this.meetingRepository = meetingRepository;
         this.time = LocalTime.now(clock);
+
+        createMeetingModelMutableLiveData.setValue(
+            new CreateMeetingViewState(
+                Room.values(),
+                null,
+                null,
+                false
+            )
+        );
     }
 
     @NonNull
@@ -66,6 +75,7 @@ public class CreateMeetingViewModel extends ViewModel {
         if (!topic.isEmpty() && currentModel != null && currentModel.getTopicError() != null) {
             createMeetingModelMutableLiveData.setValue(
                 new CreateMeetingViewState(
+                    Room.values(),
                     null,
                     currentModel.getParticipantsError(),
                     currentModel.isRoomErrorVisible()
@@ -92,6 +102,7 @@ public class CreateMeetingViewModel extends ViewModel {
         if (!participants.isEmpty() && currentModel != null && currentModel.getTopicError() != null) {
             createMeetingModelMutableLiveData.setValue(
                 new CreateMeetingViewState(
+                    Room.values(),
                     currentModel.getTopicError(),
                     null,
                     currentModel.isRoomErrorVisible()
@@ -108,7 +119,8 @@ public class CreateMeetingViewModel extends ViewModel {
         if (room != Room.UNKNOW && currentModel != null && currentModel.isRoomErrorVisible()) {
             createMeetingModelMutableLiveData.setValue(
                 new CreateMeetingViewState(
-                    null,
+                    Room.values(),
+                    currentModel.getTopicError(),
                     currentModel.getParticipantsError(),
                     currentModel.isRoomErrorVisible()
                 )
@@ -166,6 +178,7 @@ public class CreateMeetingViewModel extends ViewModel {
 
         createMeetingModelMutableLiveData.setValue(
             new CreateMeetingViewState(
+                Room.values(),
                 topicError,
                 participantsError,
                 isRoomErrorVisible
@@ -173,11 +186,6 @@ public class CreateMeetingViewModel extends ViewModel {
         );
 
         return areUserInputOk;
-    }
-
-    @NonNull
-    public CreateMeetingInitModel init() {
-        return new CreateMeetingInitModel(Room.values());
     }
 
     enum ViewAction {

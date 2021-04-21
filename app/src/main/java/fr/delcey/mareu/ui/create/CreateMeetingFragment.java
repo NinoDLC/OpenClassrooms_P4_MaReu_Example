@@ -35,6 +35,8 @@ public class CreateMeetingFragment extends Fragment {
         return new CreateMeetingFragment();
     }
 
+    private boolean isRoomSpinnerInitialized;
+
     @Nullable
     @Override
     public View onCreateView(
@@ -65,7 +67,6 @@ public class CreateMeetingFragment extends Fragment {
 
         Spinner roomSpinner = view.findViewById(R.id.create_meeting_spi_room);
         TextView roomSpinnerError = view.findViewById(R.id.create_meeting_tv_room_error);
-        initRoomSpinner(viewModel, roomSpinner, viewModel.init().getSpinnerData());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             viewModel.setTime(timePicker.getHour(), timePicker.getMinute());
@@ -74,6 +75,12 @@ public class CreateMeetingFragment extends Fragment {
         }
 
         viewModel.getCreateMeetingModelLiveData().observe(getViewLifecycleOwner(), createMeetingViewState -> {
+            // One of the few "if"s that could be tolerated in Activity or Fragment :
+            // this is because spinner adapter is a terrible class not made for MVVM
+            if (!isRoomSpinnerInitialized) {
+                isRoomSpinnerInitialized = true;
+                initRoomSpinner(viewModel, roomSpinner, createMeetingViewState.getSpinnerData());
+            }
             topicEditText.setError(createMeetingViewState.getTopicError());
             participantsEditText.setError(createMeetingViewState.getParticipantsError());
             roomSpinnerError.setVisibility(createMeetingViewState.isRoomErrorVisible() ? View.VISIBLE : View.GONE);
