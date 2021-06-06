@@ -5,15 +5,18 @@
 
 # Sujets abordés / démontrés
  * Architecture MVVM (Model View ViewModel)
- * `LiveData` (`MediatorLiveData`)
+ * `LiveData` (en particulier `MediatorLiveData`)
  * Utilisation d'un `Fragment` comme vue (`CreateMeetingFragment`)
  * Utilisation d'une `Activity` comme vue (`MeetingActivity`)
  * Utilisation d'une `DialogFragment` customisée (`SortDialogFragment`)
- * Dialogue entre un `Fragment` et son `Activity` (via l'interface `OnMeetingSortChangedListener`)
  * `RecyclerView` (et son `ListAdapter` / `DiffItemCallback`)
- * `Spinner` avec des vues complexes (`CreateMeetingSpinnerAdapter`)
- * `AnimatedVectorDrawable` avec multiple état (`asd_sort.xml`)
+ * Dialogue entre un `Adapter` et son `Activity` (via l'interface `OnMeetingClickedListener`)
+ * Utilisation d'un Repository pour persister les différents Meetings pendant la vie de l'Application (`MeetingRepository`)
+ * Utilisation d'un Repository pour faire communiquer 2 ViewModels : `MeetingActivity` et `SortDialogFragment` (`SortingParametersRepository`)
+ * `Spinner` de MaterialDesign avec des vues complexes : TextInputLayout & AutoCompleteTextView (`CreateMeetingSpinnerAdapter`)
+ * `AnimatedVectorDrawable` avec multiple état et animations (`asd_sort.xml`)
  * Enums (`Room`)
- * Singleton (`MeetingRepository`)
+ * Singleton (`ViewModelFactory`)
  * Tests unitaires (TU) avec des `LiveData` et `ViewModels` (grâce à `Mockito`)
+ * Code Coverage à 97% (`JaCoCo`)
  * Tests d'intégration poussés avec `Espresso`
