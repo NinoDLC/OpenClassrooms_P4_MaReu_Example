@@ -22,14 +22,15 @@ import java.util.List;
 import java.util.Map;
 
 import fr.delcey.mareu.R;
-import fr.delcey.mareu.domain.MeetingRepository;
-import fr.delcey.mareu.domain.pojo.Meeting;
-import fr.delcey.mareu.domain.pojo.Room;
+import fr.delcey.mareu.data.meeting.MeetingRepository;
+import fr.delcey.mareu.data.meeting.model.Meeting;
+import fr.delcey.mareu.data.meeting.model.Room;
+import fr.delcey.mareu.data.sorting.SortingParametersRepository;
+import fr.delcey.mareu.data.sorting.model.AlphabeticalSortingType;
+import fr.delcey.mareu.data.sorting.model.ChronologicalSortingType;
 import fr.delcey.mareu.ui.meetings.hour_filter.MeetingViewStateHourFilterItem;
 import fr.delcey.mareu.ui.meetings.list.MeetingViewStateItem;
 import fr.delcey.mareu.ui.meetings.room_filter.MeetingViewStateRoomFilterItem;
-import fr.delcey.mareu.ui.meetings.sort.AlphabeticSortingType;
-import fr.delcey.mareu.ui.meetings.sort.ChronologicalSortingType;
 import fr.delcey.mareu.utils.livedata.SingleLiveEvent;
 
 public class MeetingViewModel extends ViewModel {
@@ -47,7 +48,7 @@ public class MeetingViewModel extends ViewModel {
     private final MediatorLiveData<MeetingViewState> meetingViewStateMediatorLiveData = new MediatorLiveData<>();
 
     // ViewAction : display sorting dialog
-    private final MutableLiveData<MeetingViewAction> viewActionLiveEvent = new SingleLiveEvent<>();
+    private final SingleLiveEvent<MeetingViewAction> viewActionLiveEvent = new SingleLiveEvent<>();
 
     // Filter : Room
     private final MutableLiveData<Map<Room, Boolean>> selectedRoomsLiveData = new MutableLiveData<>(populateMapWithAvailableRooms());
@@ -55,20 +56,19 @@ public class MeetingViewModel extends ViewModel {
     // Filter : Hour
     private final MutableLiveData<Map<LocalTime, Boolean>> selectedHoursLiveData = new MutableLiveData<>(populateMapWithAvailableHours());
 
-    // Sorting : Alphabetic
-    private final MutableLiveData<AlphabeticSortingType> alphabeticSortingTypeLiveData = new MutableLiveData<>(AlphabeticSortingType.NONE);
-
-    // Sorting : Chronological
-    private final MutableLiveData<ChronologicalSortingType> chronologicalSortingTypeLiveData = new MutableLiveData<>(ChronologicalSortingType.NONE);
-
     public MeetingViewModel(
         @NonNull final Resources resources,
-        @NonNull final MeetingRepository meetingRepository
+        @NonNull final MeetingRepository meetingRepository,
+        @NonNull final SortingParametersRepository sortingParametersRepository
     ) {
         this.resources = resources;
         this.meetingRepository = meetingRepository;
 
-        wireMeetingModelsMediator();
+        wireMeetingModelsMediator(sortingParametersRepository);
+    }
+
+    public void onAddDebugMeetingClicked() {
+        meetingRepository.addDebugMeeting();
     }
 
     // region Meetings
@@ -76,10 +76,12 @@ public class MeetingViewModel extends ViewModel {
      * MEETINGS *
      ********** */
 
-    private void wireMeetingModelsMediator() {
+    private void wireMeetingModelsMediator(@NonNull SortingParametersRepository sortingParametersRepository) {
         // Tip : always ask "once" the LiveData from Repository : sometimes they can give you
         // different LiveDatas on subsequent calls, causing weird bugs when "wiring" the Mediator
         final LiveData<List<Meeting>> meetingsLiveData = meetingRepository.getMeetingsLiveData();
+        LiveData<AlphabeticalSortingType> alphabeticalSortingTypeLiveData = sortingParametersRepository.getAlphabeticalSortingTypeLiveData();
+        LiveData<ChronologicalSortingType> chronologicalSortingTypeLiveData = sortingParametersRepository.getChronologicalSortingTypeLiveData();
 
         meetingViewStateMediatorLiveData.addSource(meetingsLiveData, meetings ->
             meetingViewStateMediatorLiveData.setValue(
@@ -87,7 +89,7 @@ public class MeetingViewModel extends ViewModel {
                     meetings,
                     selectedRoomsLiveData.getValue(),
                     selectedHoursLiveData.getValue(),
-                    alphabeticSortingTypeLiveData.getValue(),
+                    alphabeticalSortingTypeLiveData.getValue(),
                     chronologicalSortingTypeLiveData.getValue()
                 )
             )
@@ -99,7 +101,7 @@ public class MeetingViewModel extends ViewModel {
                     meetingsLiveData.getValue(),
                     selectedRooms,
                     selectedHoursLiveData.getValue(),
-                    alphabeticSortingTypeLiveData.getValue(),
+                    alphabeticalSortingTypeLiveData.getValue(),
                     chronologicalSortingTypeLiveData.getValue()
                 )
             )
@@ -111,19 +113,19 @@ public class MeetingViewModel extends ViewModel {
                     meetingsLiveData.getValue(),
                     selectedRoomsLiveData.getValue(),
                     selectedHours,
-                    alphabeticSortingTypeLiveData.getValue(),
+                    alphabeticalSortingTypeLiveData.getValue(),
                     chronologicalSortingTypeLiveData.getValue()
                 )
             )
         );
 
-        meetingViewStateMediatorLiveData.addSource(alphabeticSortingTypeLiveData, alphabeticSortingType ->
+        meetingViewStateMediatorLiveData.addSource(alphabeticalSortingTypeLiveData, alphabeticalSortingType ->
             meetingViewStateMediatorLiveData.setValue(
                 sortAndFilterMeetings(
                     meetingsLiveData.getValue(),
                     selectedRoomsLiveData.getValue(),
                     selectedHoursLiveData.getValue(),
-                    alphabeticSortingType,
+                    alphabeticalSortingType,
                     chronologicalSortingTypeLiveData.getValue()
                 )
             )
@@ -135,7 +137,7 @@ public class MeetingViewModel extends ViewModel {
                     meetingsLiveData.getValue(),
                     selectedRoomsLiveData.getValue(),
                     selectedHoursLiveData.getValue(),
-                    alphabeticSortingTypeLiveData.getValue(),
+                    alphabeticalSortingTypeLiveData.getValue(),
                     chronologicalSortingType
                 )
             )
@@ -143,23 +145,31 @@ public class MeetingViewModel extends ViewModel {
     }
 
     @NonNull
-    public LiveData<MeetingViewState> getMeetingViewStateLiveData() {
+    public LiveData<MeetingViewState> getViewStateLiveData() {
         return meetingViewStateMediatorLiveData;
     }
 
+    public SingleLiveEvent<MeetingViewAction> getViewActionSingleLiveEvent() {
+        return viewActionLiveEvent;
+    }
+
+    public void onDisplaySortingButtonClicked() {
+        viewActionLiveEvent.setValue(MeetingViewAction.DISPLAY_SORTING_DIALOG);
+    }
+
+    @NonNull
     private MeetingViewState sortAndFilterMeetings(
         @Nullable final List<Meeting> meetings,
         @Nullable final Map<Room, Boolean> selectedRooms,
         @Nullable final Map<LocalTime, Boolean> selectedHours,
-        @Nullable final AlphabeticSortingType alphabeticSortingType,
+        @Nullable final AlphabeticalSortingType alphabeticalSortingType,
         @Nullable final ChronologicalSortingType chronologicalSortingType
     ) {
         if (selectedRooms == null
             || selectedHours == null
-            || alphabeticSortingType == null
+            || alphabeticalSortingType == null
             || chronologicalSortingType == null) {
-            // This should never happen... All internal LiveData should be initialized !
-            throw new IllegalStateException("All internal LiveData should be initialized !");
+            throw new IllegalStateException("All internal LiveData must be initialized !");
         }
 
         // Filter meetings...
@@ -168,7 +178,7 @@ public class MeetingViewModel extends ViewModel {
         // ... then sort them...
         Collections.sort(
             filteredMeetings,
-            (meeting1, meeting2) -> compareMeetings(meeting1, meeting2, alphabeticSortingType, chronologicalSortingType)
+            (meeting1, meeting2) -> compareMeetings(meeting1, meeting2, alphabeticalSortingType, chronologicalSortingType)
         );
 
         // ... and finally, map them !
@@ -191,6 +201,7 @@ public class MeetingViewModel extends ViewModel {
         );
     }
 
+    @NonNull
     private List<Meeting> getFilteredMeetings(@Nullable List<Meeting> meetings, @NonNull Map<Room, Boolean> selectedRooms, @NonNull Map<LocalTime, Boolean> selectedHours) {
         List<Meeting> filteredMeetings = new ArrayList<>();
 
@@ -251,12 +262,12 @@ public class MeetingViewModel extends ViewModel {
     private int compareMeetings(
         @NonNull Meeting meeting1,
         @NonNull Meeting meeting2,
-        @NonNull AlphabeticSortingType alphabeticSortingType,
+        @NonNull AlphabeticalSortingType alphabeticalSortingType,
         @NonNull ChronologicalSortingType chronologicalSortingType
     ) {
         // Filter alphabetically on topic first (because user set an alphabetical sorting)
-        if (alphabeticSortingType.getComparator() != null) {
-            int alphabeticalComparison = alphabeticSortingType.getComparator().compare(meeting1, meeting2);
+        if (alphabeticalSortingType.getComparator() != null) {
+            int alphabeticalComparison = alphabeticalSortingType.getComparator().compare(meeting1, meeting2);
 
             // They have a different topic, and date comparison is useless, just return the alphabetical comparison
             if (alphabeticalComparison != 0) {
@@ -297,7 +308,7 @@ public class MeetingViewModel extends ViewModel {
             resources.getString(
                 R.string.meeting_title,
                 meeting.getTopic(),
-                meeting.getTime().toString(),
+                DateTimeFormatter.ofPattern("HH:mm").format(meeting.getTime()),
                 resources.getString(meeting.getRoom().getStringResName())
             ),
             stringifyParticipants(meeting.getParticipants())
@@ -321,26 +332,13 @@ public class MeetingViewModel extends ViewModel {
         return result.toString();
     }
 
-    public void deleteMeeting(int meetingId) {
+    public void onDeleteMeetingClicked(int meetingId) {
         meetingRepository.deleteMeeting(meetingId);
     }
     // endregion
 
     // region Filter: Room
-    @NonNull
-    private Map<Room, Boolean> populateMapWithAvailableRooms() {
-        Map<Room, Boolean> rooms = new LinkedHashMap<>();
-
-        for (Room room : Room.values()) {
-            if (room != Room.UNKNOW) {
-                rooms.put(room, false);
-            }
-        }
-
-        return rooms;
-    }
-
-    public void setRoomSelected(@NonNull Room room) {
+    public void onRoomSelected(@NonNull Room room) {
         Map<Room, Boolean> selectedRooms = selectedRoomsLiveData.getValue();
 
         if (selectedRooms == null) {
@@ -357,6 +355,18 @@ public class MeetingViewModel extends ViewModel {
         selectedRoomsLiveData.setValue(selectedRooms);
     }
 
+    @NonNull
+    private Map<Room, Boolean> populateMapWithAvailableRooms() {
+        Map<Room, Boolean> rooms = new LinkedHashMap<>();
+
+        for (Room room : Room.values()) {
+            rooms.put(room, false);
+        }
+
+        return rooms;
+    }
+
+    @NonNull
     private List<MeetingViewStateRoomFilterItem> getMeetingViewStateRoomFilterItems(@NonNull Map<Room, Boolean> selectedRooms) {
         List<MeetingViewStateRoomFilterItem> meetingViewStateRoomFilterItems = new ArrayList<>();
         for (Map.Entry<Room, Boolean> entry : selectedRooms.entrySet()) {
@@ -382,6 +392,24 @@ public class MeetingViewModel extends ViewModel {
     // endregion
 
     // region Filter: Hour
+    public void onHourSelected(@NonNull LocalTime hour) {
+        Map<LocalTime, Boolean> selectedHours = selectedHoursLiveData.getValue();
+
+        if (selectedHours == null) {
+            return;
+        }
+
+        for (Map.Entry<LocalTime, Boolean> entry : selectedHours.entrySet()) {
+            if (entry.getKey().equals(hour)) {
+                entry.setValue(!entry.getValue());
+                break;
+            }
+        }
+
+        selectedHoursLiveData.setValue(selectedHours);
+    }
+
+    @NonNull
     private Map<LocalTime, Boolean> populateMapWithAvailableHours() {
         Map<LocalTime, Boolean> hours = new LinkedHashMap<>();
 
@@ -392,25 +420,7 @@ public class MeetingViewModel extends ViewModel {
         return hours;
     }
 
-    public void setHourSelected(@NonNull String hour) {
-        Map<LocalTime, Boolean> selectedHours = selectedHoursLiveData.getValue();
-
-        if (selectedHours == null) {
-            return;
-        }
-
-        LocalTime hourParsed = LocalTime.parse(hour);
-
-        for (Map.Entry<LocalTime, Boolean> entry : selectedHours.entrySet()) {
-            if (entry.getKey().equals(hourParsed)) {
-                entry.setValue(!entry.getValue());
-                break;
-            }
-        }
-
-        selectedHoursLiveData.setValue(selectedHours);
-    }
-
+    @NonNull
     private List<MeetingViewStateHourFilterItem> getMeetingViewStateHourFilterItems(@NonNull Map<LocalTime, Boolean> selectedHours) {
         List<MeetingViewStateHourFilterItem> meetingViewStateHourFilterItems = new ArrayList<>();
 
@@ -451,6 +461,7 @@ public class MeetingViewModel extends ViewModel {
 
             meetingViewStateHourFilterItems.add(
                 new MeetingViewStateHourFilterItem(
+                    localTime,
                     localTime.format(DateTimeFormatter.ofPattern("HH:mm")),
                     drawableResBackground,
                     textColorRes
@@ -462,7 +473,7 @@ public class MeetingViewModel extends ViewModel {
         return meetingViewStateHourFilterItems;
     }
 
-    private boolean isHourSelected(Map<LocalTime, Boolean> selectedHours, LocalTime hour) {
+    private boolean isHourSelected(@NonNull Map<LocalTime, Boolean> selectedHours, @NonNull LocalTime hour) {
         for (Map.Entry<LocalTime, Boolean> entry : selectedHours.entrySet()) {
             if (entry.getKey().equals(hour)) {
                 return entry.getValue();
@@ -472,67 +483,4 @@ public class MeetingViewModel extends ViewModel {
         return false;
     }
     // endregion
-
-    // TODO NINO Need unit test
-    public LiveData<MeetingViewAction> getViewActionLiveData() {
-        return viewActionLiveEvent;
-    }
-
-    // TODO NINO Need unit test
-    public void displaySortingDialog() {
-        assert alphabeticSortingTypeLiveData.getValue() != null;
-        assert chronologicalSortingTypeLiveData.getValue() != null;
-
-        viewActionLiveEvent.setValue(
-            new MeetingViewAction.DisplaySortingDialogMeetingViewAction(
-                alphabeticSortingTypeLiveData.getValue(),
-                chronologicalSortingTypeLiveData.getValue()
-            )
-        );
-    }
-
-    // TODO NINO Need unit test
-    public LiveData<AlphabeticSortingType> getAlphabeticSortingTypeLiveData() {
-        return alphabeticSortingTypeLiveData;
-    }
-
-    public void changeAlphabeticSorting() {
-        AlphabeticSortingType type = alphabeticSortingTypeLiveData.getValue();
-
-        AlphabeticSortingType newType;
-
-        if (type == AlphabeticSortingType.AZ) {
-            newType = AlphabeticSortingType.ZA;
-        } else if (type == AlphabeticSortingType.ZA) {
-            newType = AlphabeticSortingType.NONE;
-        } else {
-            newType = AlphabeticSortingType.AZ;
-        }
-
-        alphabeticSortingTypeLiveData.setValue(newType);
-    }
-
-    public LiveData<ChronologicalSortingType> getChronologicalSortingTypeLiveData() {
-        return chronologicalSortingTypeLiveData;
-    }
-
-    public void changeChronologicalSorting() {
-        ChronologicalSortingType type = chronologicalSortingTypeLiveData.getValue();
-
-        ChronologicalSortingType newType;
-
-        if (type == ChronologicalSortingType.OLDEST_FIRST) {
-            newType = ChronologicalSortingType.NEWEST_FIRST;
-        } else if (type == ChronologicalSortingType.NEWEST_FIRST) {
-            newType = ChronologicalSortingType.NONE;
-        } else {
-            newType = ChronologicalSortingType.OLDEST_FIRST;
-        }
-
-        chronologicalSortingTypeLiveData.setValue(newType);
-    }
-
-    public void addDebugMeeting() {
-        meetingRepository.addDebugMeeting();
-    }
 }

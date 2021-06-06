@@ -7,5 +7,5 @@ import androidx.annotation.NonNull;
 public interface OnMeetingClickedListener {
     void onMeetingClicked(@NonNull View imageView, @NonNull View textView, int meetingId);
 
-    void onMeetingDeleteClicked(int meetingId);
+    void onDeleteMeetingClicked(int meetingId);
 }

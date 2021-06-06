@@ -11,11 +11,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import fr.delcey.mareu.R;
-import fr.delcey.mareu.domain.pojo.Room;
+import fr.delcey.mareu.data.meeting.model.Room;
 
 class CreateMeetingSpinnerAdapter extends ArrayAdapter<Room> {
-    public CreateMeetingSpinnerAdapter(@NonNull Context context, Room[] resource) {
-        super(context, R.layout.create_meeting_spinner_item, resource);
+    public CreateMeetingSpinnerAdapter(@NonNull Context context, Room[] rooms) {
+        super(context, R.layout.create_meeting_spinner_item, rooms);
     }
 
     @Override

@@ -19,17 +19,19 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
+                app:endIconMode="clear_text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:startIconDrawable="@drawable/ic_subject_24">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/create_meeting_et_topic"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/topic"
-                    android:inputType="textMultiLine"
-                    tools:text="Réunion A" />
+                    android:imeOptions="actionNext"
+                    android:inputType="textAutoCorrect" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -38,71 +40,60 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
+                app:endIconMode="clear_text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/create_meeting_til_topic">
+                app:layout_constraintTop_toBottomOf="@id/create_meeting_til_topic"
+                app:startIconDrawable="@drawable/ic_person_24">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/create_meeting_et_participants"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/participants"
-                    android:inputType="textMultiLine"
-                    tools:text="anthony@delcey.fr" />
+                    android:imeOptions="actionDone"
+                    android:inputType="textEmailAddress" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/create_meeting_tv_room"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:text="@string/room"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@id/create_meeting_spi_room"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/create_meeting_spi_room" />
-
-            <Spinner
-                android:id="@+id/create_meeting_spi_room"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/create_meeting_til_room"
+                style="@style/Widget.MaReu.Spinner"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/create_meeting_tv_room"
-                app:layout_constraintTop_toBottomOf="@id/create_meeting_til_participants" />
-
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/create_meeting_bar_room"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:barrierDirection="bottom"
-                app:constraint_referenced_ids="create_meeting_spi_room,create_meeting_tv_room" />
-
-            <TextView
-                android:id="@+id/create_meeting_tv_room_error"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="8dp"
-                android:gravity="end"
-                android:text="@string/select_a_room_error"
-                android:textColor="@color/red"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/create_meeting_bar_room"
-                tools:visibility="visible" />
+                app:layout_constraintTop_toBottomOf="@id/create_meeting_til_participants"
+                app:startIconDrawable="@drawable/ic_location_24"
+                tools:endIconMode="dropdown_menu">
 
-            <TimePicker
-                android:id="@+id/create_meeting_tp"
-                android:layout_width="wrap_content"
+                <AutoCompleteTextView
+                    android:id="@+id/create_meeting_actv_room"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/room"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/create_meeting_til_time"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/create_meeting_tv_room_error" />
+                app:layout_constraintTop_toBottomOf="@id/create_meeting_til_room"
+                app:startIconDrawable="@drawable/ic_time_24">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/create_meeting_et_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:hint="@string/time"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
@@ -114,5 +105,5 @@
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
         android:contentDescription="@string/content_description_add"
-        android:src="@drawable/ic_check_white_24dp" />
+        android:src="@drawable/ic_check_24" />
 </FrameLayout>

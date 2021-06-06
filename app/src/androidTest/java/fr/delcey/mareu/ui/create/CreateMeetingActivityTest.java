@@ -1,6 +1,5 @@
 package fr.delcey.mareu.ui.create;
 
-
 import android.content.Context;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -17,7 +16,7 @@ import org.junit.runner.RunWith;
 import java.time.LocalTime;
 
 import fr.delcey.mareu.R;
-import fr.delcey.mareu.domain.pojo.Room;
+import fr.delcey.mareu.data.meeting.model.Room;
 import fr.delcey.mareu.ui.CreateMeetingUtils;
 import fr.delcey.mareu.ui.utils.EditTextErrorMatcher;
 
@@ -28,8 +27,9 @@ import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
 import static androidx.test.espresso.matcher.ViewMatchers.hasImeAction;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -85,17 +85,15 @@ public class CreateMeetingActivityTest {
 
     @Test
     public void assert_user_input_checks_before_creating_meeting() {
-        // Never put time as field... always local variables (or access time on-execution) !
-        LocalTime firstTime = LocalTime.of(8, 30);
-
-        CreateMeetingUtils.createMeeting("", "", Room.UNKNOW, firstTime);
+        CreateMeetingUtils.createMeeting("", "", null, null);
 
         onView(withId(R.id.create_meeting_fab_validate)).perform(click());
 
         assertFalse(activityRef.isFinishing());
         onView(withId(R.id.create_meeting_et_topic)).check(matches(new EditTextErrorMatcher(R.string.topic_user_input_error)));
         onView(withId(R.id.create_meeting_et_participants)).check(matches(new EditTextErrorMatcher(R.string.participants_user_input_error)));
-        onView(withId(R.id.create_meeting_tv_room_error)).check(matches(isDisplayed()));
+        onView(withId(R.id.create_meeting_actv_room)).check(matches(new EditTextErrorMatcher(R.string.room_user_input_error)));
+        onView(withId(R.id.create_meeting_et_time)).check(matches(not(withText(""))));
 
         CreateMeetingUtils.setMeetingTopic("topic");
 
@@ -104,7 +102,8 @@ public class CreateMeetingActivityTest {
         assertFalse(activityRef.isFinishing());
         onView(withId(R.id.create_meeting_et_topic)).check(matches(new EditTextErrorMatcher(0)));
         onView(withId(R.id.create_meeting_et_participants)).check(matches(new EditTextErrorMatcher(R.string.participants_user_input_error)));
-        onView(withId(R.id.create_meeting_tv_room_error)).check(matches(isDisplayed()));
+        onView(withId(R.id.create_meeting_actv_room)).check(matches(new EditTextErrorMatcher(R.string.room_user_input_error)));
+        onView(withId(R.id.create_meeting_et_time)).check(matches(not(withText(""))));
 
         CreateMeetingUtils.setMeetingParticipants("foo.bar@gmail.com");
 
@@ -113,9 +112,15 @@ public class CreateMeetingActivityTest {
         assertFalse(activityRef.isFinishing());
         onView(withId(R.id.create_meeting_et_topic)).check(matches(new EditTextErrorMatcher(0)));
         onView(withId(R.id.create_meeting_et_participants)).check(matches(new EditTextErrorMatcher(0)));
-        onView(withId(R.id.create_meeting_tv_room_error)).check(matches(isDisplayed()));
+        onView(withId(R.id.create_meeting_actv_room)).check(matches(new EditTextErrorMatcher(R.string.room_user_input_error)));
+        onView(withId(R.id.create_meeting_et_time)).check(matches(not(withText(""))));
 
         CreateMeetingUtils.setMeetingRoom(Room.PEACH);
+
+        onView(withId(R.id.create_meeting_et_topic)).check(matches(new EditTextErrorMatcher(0)));
+        onView(withId(R.id.create_meeting_et_participants)).check(matches(new EditTextErrorMatcher(0)));
+        onView(withId(R.id.create_meeting_actv_room)).check(matches(new EditTextErrorMatcher(0)));
+        onView(withId(R.id.create_meeting_et_time)).check(matches(not(withText(""))));
 
         onView(withId(R.id.create_meeting_fab_validate)).perform(click());
         assertTrue(activityRef.isFinishing());

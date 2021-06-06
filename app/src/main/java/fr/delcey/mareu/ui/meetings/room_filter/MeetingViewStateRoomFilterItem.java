@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Objects;
 
-import fr.delcey.mareu.domain.pojo.Room;
+import fr.delcey.mareu.data.meeting.model.Room;
 
 public class MeetingViewStateRoomFilterItem {
 

@@ -1,6 +1,5 @@
 package fr.delcey.mareu.ui.meetings;
 
-
 import androidx.annotation.NonNull;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -15,7 +14,7 @@ import org.junit.runner.RunWith;
 import java.time.LocalTime;
 
 import fr.delcey.mareu.R;
-import fr.delcey.mareu.domain.pojo.Room;
+import fr.delcey.mareu.data.meeting.model.Room;
 import fr.delcey.mareu.ui.CreateMeetingUtils;
 import fr.delcey.mareu.ui.meetings.utils.HourFilterViewHolderMatcher;
 import fr.delcey.mareu.ui.meetings.utils.RoomFilterViewHolderMatcher;
@@ -32,10 +31,10 @@ import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtP
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToHolder;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static fr.delcey.mareu.domain.pojo.Room.DK;
-import static fr.delcey.mareu.domain.pojo.Room.MARIO;
-import static fr.delcey.mareu.domain.pojo.Room.PEACH;
-import static fr.delcey.mareu.domain.pojo.Room.YOSHI;
+import static fr.delcey.mareu.data.meeting.model.Room.DK;
+import static fr.delcey.mareu.data.meeting.model.Room.MARIO;
+import static fr.delcey.mareu.data.meeting.model.Room.PEACH;
+import static fr.delcey.mareu.data.meeting.model.Room.YOSHI;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)

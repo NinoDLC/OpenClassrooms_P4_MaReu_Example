@@ -1,37 +1,54 @@
 package fr.delcey.mareu.ui;
 
 import androidx.annotation.NonNull;
-import androidx.test.espresso.contrib.PickerActions;
+import androidx.annotation.Nullable;
 
 import java.time.LocalTime;
 
 import fr.delcey.mareu.R;
-import fr.delcey.mareu.domain.pojo.Room;
-import fr.delcey.mareu.ui.meetings.utils.RoomSpinnerItemMatcher;
+import fr.delcey.mareu.data.meeting.model.Room;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.allOf;
 
 public class CreateMeetingUtils {
 
+    /**
+     * Creates a meeting, given we are on the CreateMeetingFragment. Provide a null argument to ignore
+     * @param topic if null, won't change the current topic, else, change it
+     * @param participants if null, won't change the current participants, else, change it
+     * @param room if null, won't change the current room, else, change it
+     * @param time if null, won't change the current time, else, change it
+     */
     public static void createMeeting(
-        @NonNull final String topic,
-        @NonNull final String participants,
-        @NonNull final Room room,
-        @NonNull final LocalTime time
+        @Nullable final String topic,
+        @Nullable final String participants,
+        @Nullable final Room room,
+        @Nullable final LocalTime time
     ) {
-        setMeetingTopic(topic);
+        if (topic != null) {
+            setMeetingTopic(topic);
+        }
 
-        setMeetingParticipants(participants);
+        if (participants != null) {
+            setMeetingParticipants(participants);
+        }
 
-        setMeetingRoom(room);
+        if (room != null) {
+            setMeetingRoom(room);
+        }
 
-        onView(withId(R.id.create_meeting_tp)).perform(PickerActions.setTime(time.getHour(), time.getMinute()));
+        if (time != null) {
+            setMeetingTime(time);
+        }
     }
 
     public static void setMeetingTopic(@NonNull String topic) {
@@ -55,8 +72,36 @@ public class CreateMeetingUtils {
     }
 
     public static void setMeetingRoom(@NonNull Room room) {
-        onView(withId(R.id.create_meeting_spi_room)).perform(scrollTo(), click());
+        onView(withId(R.id.create_meeting_til_room)).perform(scrollTo(), click());
 
-        onData(new RoomSpinnerItemMatcher(room)).perform(scrollTo(), click());
+        onView(withText(room.getStringResName())).inRoot(isPlatformPopup()).perform(scrollTo(), click());
+    }
+
+    public static void setMeetingTime(@NonNull LocalTime time) {
+        if (time.getHour() % 2 != 0) {
+            throw new IllegalStateException("Sorry, this method can't work with odd hours. Gotta improve it !");
+        }
+
+        if (time.getMinute() % 5 != 0) {
+            throw new IllegalStateException("Sorry, this method can't work with minutes not divisible by 5. Gotta improve it !");
+        }
+
+        onView(withId(R.id.create_meeting_til_time)).perform(scrollTo(), click());
+
+        onView(
+            allOf(
+                withText("" + time.getHour()),
+                withParent(withId(R.id.material_clock_face))
+            )
+        ).perform(click());
+
+        onView(
+            allOf(
+                withText("" + time.getMinute()),
+                withParent(withId(R.id.material_clock_face))
+            )
+        ).perform(click());
+
+        onView(withId(R.id.material_timepicker_ok_button)).perform(click());
     }
 }

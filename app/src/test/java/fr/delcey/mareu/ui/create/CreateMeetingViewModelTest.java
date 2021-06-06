@@ -2,6 +2,7 @@ package fr.delcey.mareu.ui.create;
 
 import android.content.res.Resources;
 
+import androidx.annotation.NonNull;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
 import org.junit.Before;
@@ -16,16 +17,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import fr.delcey.mareu.R;
-import fr.delcey.mareu.domain.MeetingRepository;
-import fr.delcey.mareu.domain.pojo.Room;
+import fr.delcey.mareu.data.meeting.MeetingRepository;
+import fr.delcey.mareu.data.meeting.model.Room;
 import fr.delcey.mareu.ui.create.CreateMeetingViewModel.ViewAction;
 import fr.delcey.mareu.utils.LiveDataTestUtils;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
@@ -37,6 +39,12 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public class CreateMeetingViewModelTest {
 
+    private static final String EXPECTED_TOPIC_USER_INPUT_ERROR = "EXPECTED_TOPIC_USER_INPUT_ERROR";
+    private static final String EXPECTED_PARTICIPANTS_USER_INPUT_ERROR = "EXPECTED_PARTICIPANTS_USER_INPUT_ERROR";
+    private static final String EXPECTED_ROOM_USER_INPUT_ERROR = "EXPECTED_ROOM_USER_INPUT_ERROR";
+
+    private static final String EXPECTED_TIME = "13:00";
+
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
@@ -46,64 +54,78 @@ public class CreateMeetingViewModelTest {
     @Mock
     private MeetingRepository repository;
 
+    private Clock clock;
+
     private CreateMeetingViewModel viewModel;
 
     @Before
     public void setUp() {
         // Useful for unit testing with time
-        Clock clock = Clock.fixed(
-            LocalDateTime
-                .of(
-                    LocalDate.of(1991, 2, 26),
-                    LocalTime.of(12, 50)
-                )
-                .atZone(ZoneOffset.UTC)
-                .toInstant(),
-            ZoneOffset.UTC
-        );
+        clock = getDefaultClock(getDefaultLocalDate(), getDefaultLocalTime());
 
-        viewModel = new CreateMeetingViewModel(resources, repository, clock);
+        given(resources.getString(R.string.topic_user_input_error)).willReturn(EXPECTED_TOPIC_USER_INPUT_ERROR);
+        given(resources.getString(R.string.participants_user_input_error)).willReturn(EXPECTED_PARTICIPANTS_USER_INPUT_ERROR);
+        given(resources.getString(R.string.room_user_input_error)).willReturn(EXPECTED_ROOM_USER_INPUT_ERROR);
+
+        viewModel = new CreateMeetingViewModel(resources, repository, DateTimeFormatter.ofPattern("HH:mm"), clock);
+    }
+
+    @Test
+    public void at_startup_viewmodel_should_expose_rounded_time_and_rooms() throws InterruptedException {
+        // When
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+
+        // Then
+        assertArrayEquals(Room.values(), result.getRooms());
+        assertEquals(EXPECTED_TIME, result.getTime());
+        assertNull(result.getTopicError());
+        assertNull(result.getParticipantsError());
+        assertNull(result.getRoomError());
     }
 
     @Test
     public void given_inputs_are_corrects_livedata_should_not_expose_anything_and_view_action_should_expose_close() throws InterruptedException {
         // When
-        viewModel.setTopic("Topic");
-        viewModel.setParticipants("participant@mail.org");
-        viewModel.setRoom(Room.MARIO);
+        viewModel.onTopicChanged("Topic");
+        viewModel.onParticipantsChanged("participant@mail.org");
+        viewModel.onRoomChanged(Room.MARIO);
         viewModel.createMeeting();
 
         ViewAction viewActionResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewActionLiveData());
-        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
 
         // Then
-        assertEquals(ViewAction.CLOSE_ACTIVITY, viewActionResult);
+        assertTrue(viewActionResult instanceof ViewAction.CloseActivity);
+        assertArrayEquals(Room.values(), result.getRooms());
+        assertEquals(EXPECTED_TIME, result.getTime());
         assertNull(result.getTopicError());
         assertNull(result.getParticipantsError());
-        assertFalse(result.isRoomErrorVisible());
+        assertNull(result.getRoomError());
         verifyRepoAddedMeeting();
     }
 
     @Test
     public void given_inputs_are_corrects_with_modified_time_livedata_should_not_expose_anything_and_view_action_should_expose_close() throws InterruptedException {
         // When
-        viewModel.setTopic("Topic");
-        viewModel.setParticipants("participant@mail.org");
-        viewModel.setRoom(Room.MARIO);
-        viewModel.setTime(21, 30);
+        viewModel.onTopicChanged("Topic");
+        viewModel.onParticipantsChanged("participant@mail.org");
+        viewModel.onRoomChanged(Room.MARIO);
+        viewModel.onTimeChanged(21, 10);
         viewModel.createMeeting();
 
         ViewAction viewActionResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewActionLiveData());
-        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
 
         // Then
-        assertEquals(ViewAction.CLOSE_ACTIVITY, viewActionResult);
+        assertTrue(viewActionResult instanceof ViewAction.CloseActivity);
+        assertArrayEquals(Room.values(), result.getRooms());
+        assertEquals("21:10", result.getTime());
         assertNull(result.getTopicError());
         assertNull(result.getParticipantsError());
-        assertFalse(result.isRoomErrorVisible());
+        assertNull(result.getRoomError());
         verify(repository).addMeeting(
             eq("Topic"),
-            eq(LocalTime.of(21, 30)),
+            eq(LocalTime.of(21, 10)),
             eq(new ArrayList<String>() {{
                 add("participant@mail.org");
             }}),
@@ -113,28 +135,119 @@ public class CreateMeetingViewModelTest {
     }
 
     @Test
+    public void given_current_time_minutes_are_0_then_should_expose_1200() throws InterruptedException {
+        // Given
+        clock = getDefaultClock(getDefaultLocalDate(), LocalTime.of(12,0));
+
+        // When
+        CreateMeetingViewModel viewModel = new CreateMeetingViewModel(resources, repository, DateTimeFormatter.ofPattern("HH:mm"), clock);
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+
+        // Then
+        assertEquals("12:00", result.getTime());
+    }
+
+    @Test
+    public void given_current_time_minutes_are_1_then_should_expose_1230() throws InterruptedException {
+        // Given
+        clock = getDefaultClock(getDefaultLocalDate(), LocalTime.of(12,1));
+
+        // When
+        CreateMeetingViewModel viewModel = new CreateMeetingViewModel(resources, repository, DateTimeFormatter.ofPattern("HH:mm"), clock);
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+
+        // Then
+        assertEquals("12:30", result.getTime());
+    }
+
+    @Test
+    public void given_current_time_minutes_are_15_then_should_expose_1230() throws InterruptedException {
+        // Given
+        clock = getDefaultClock(getDefaultLocalDate(), LocalTime.of(12,15));
+
+        // When
+        CreateMeetingViewModel viewModel = new CreateMeetingViewModel(resources, repository, DateTimeFormatter.ofPattern("HH:mm"), clock);
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+
+        // Then
+        assertEquals("12:30", result.getTime());
+    }
+
+    @Test
+    public void given_current_time_minutes_are_29_then_should_expose_1230() throws InterruptedException {
+        // Given
+        clock = getDefaultClock(getDefaultLocalDate(), LocalTime.of(12, 29));
+
+        // When
+        CreateMeetingViewModel viewModel = new CreateMeetingViewModel(resources, repository, DateTimeFormatter.ofPattern("HH:mm"), clock);
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+
+        // Then
+        assertEquals("12:30", result.getTime());
+    }
+
+    @Test
+    public void given_current_time_minutes_are_30_then_should_expose_1230() throws InterruptedException {
+        // Given
+        clock = getDefaultClock(getDefaultLocalDate(), LocalTime.of(12, 30));
+
+        // When
+        CreateMeetingViewModel viewModel = new CreateMeetingViewModel(resources, repository, DateTimeFormatter.ofPattern("HH:mm"), clock);
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+
+        // Then
+        assertEquals("12:30", result.getTime());
+    }
+
+    @Test
+    public void given_current_time_minutes_are_31_then_should_expose_1300() throws InterruptedException {
+        // Given
+        clock = getDefaultClock(getDefaultLocalDate(), LocalTime.of(12, 31));
+
+        // When
+        CreateMeetingViewModel viewModel = new CreateMeetingViewModel(resources, repository, DateTimeFormatter.ofPattern("HH:mm"), clock);
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+
+        // Then
+        assertEquals("13:00", result.getTime());
+    }
+
+    @Test
+    public void given_current_time_minutes_are_59_then_should_expose_1300() throws InterruptedException {
+        // Given
+        clock = getDefaultClock(getDefaultLocalDate(), LocalTime.of(12, 31));
+
+        // When
+        CreateMeetingViewModel viewModel = new CreateMeetingViewModel(resources, repository, DateTimeFormatter.ofPattern("HH:mm"), clock);
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+
+        // Then
+        assertEquals("13:00", result.getTime());
+    }
+
+    @Test
     public void given_inputs_are_corrects_with_multiple_participants_livedata_should_not_expose_anything_and_view_action_should_expose_close() throws InterruptedException {
         // When
-        viewModel.setTopic("Topic");
-        viewModel.setParticipants("participant@mail.org");
-        viewModel.setParticipants("participant@mail.org,");
-        viewModel.setParticipants("participant@mail.org,   participant2@mail.org  ");
-        viewModel.setParticipants("participant@mail.org,   participant2@mail.org  ,");
-        viewModel.setParticipants("participant@mail.org,   participant2@mail.org  ,     toto@tata.fr, john.smith@consulting.com    ");
-        viewModel.setRoom(Room.MARIO);
+        viewModel.onTopicChanged("Topic");
+        viewModel.onParticipantsChanged("participant@mail.org");
+        viewModel.onParticipantsChanged("participant@mail.org,");
+        viewModel.onParticipantsChanged("participant@mail.org,   participant2@mail.org  ");
+        viewModel.onParticipantsChanged("participant@mail.org,   participant2@mail.org  ,");
+        viewModel.onParticipantsChanged("participant@mail.org,   participant2@mail.org  ,     toto@tata.fr, john.smith@consulting.com    ");
+        viewModel.onRoomChanged(Room.MARIO);
         viewModel.createMeeting();
 
         ViewAction viewActionResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewActionLiveData());
-        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
 
         // Then
-        assertEquals(ViewAction.CLOSE_ACTIVITY, viewActionResult);
+        assertTrue(viewActionResult instanceof ViewAction.CloseActivity);
         assertNull(result.getTopicError());
         assertNull(result.getParticipantsError());
-        assertFalse(result.isRoomErrorVisible());
+        assertNull(result.getRoomError());
         verify(repository).addMeeting(
             eq("Topic"),
-            eq(LocalTime.of(12, 50)),
+            eq(LocalTime.of(13, 0)),
             eq(new ArrayList<String>() {{
                 add("participant@mail.org");
                 add("participant2@mail.org");
@@ -148,199 +261,225 @@ public class CreateMeetingViewModelTest {
 
     @Test
     public void given_topic_is_not_set_livedata_should_expose_viewmodel_with_topic_error() throws InterruptedException {
-        // Given
-        given(resources.getString(R.string.topic_user_input_error)).willReturn("topic_user_input_error");
-
         // When
-        viewModel.setParticipants("participant@mail.org");
-        viewModel.setRoom(Room.MARIO);
+        viewModel.onParticipantsChanged("participant@mail.org");
+        viewModel.onRoomChanged(Room.MARIO);
         viewModel.createMeeting();
 
-        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
 
         // Then
-        assertEquals("topic_user_input_error", result.getTopicError());
+        assertEquals(EXPECTED_TOPIC_USER_INPUT_ERROR, result.getTopicError());
         assertNull(result.getParticipantsError());
-        assertFalse(result.isRoomErrorVisible());
+        assertNull(result.getRoomError());
         verifyNoInteractions(repository);
     }
 
     @Test
     public void given_topic_is_set_then_deleted_livedata_should_expose_viewmodel_with_topic_error() throws InterruptedException {
-        // Given
-        given(resources.getString(R.string.topic_user_input_error)).willReturn("topic_user_input_error");
-
         // When
-        viewModel.setTopic("Topic");
-        viewModel.setParticipants("participant@mail.org");
-        viewModel.setRoom(Room.MARIO);
-        viewModel.setTopic("");
+        viewModel.onTopicChanged("Topic");
+        viewModel.onParticipantsChanged("participant@mail.org");
+        viewModel.onRoomChanged(Room.MARIO);
+        viewModel.onTopicChanged("");
         viewModel.createMeeting();
 
-        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
 
         // Then
-        assertEquals("topic_user_input_error", result.getTopicError());
+        assertEquals(EXPECTED_TOPIC_USER_INPUT_ERROR, result.getTopicError());
         assertNull(result.getParticipantsError());
-        assertFalse(result.isRoomErrorVisible());
+        assertNull(result.getRoomError());
         verifyNoInteractions(repository);
     }
 
     @Test
     public void given_participants_are_not_set_livedata_should_expose_viewmodel_with_participant_error() throws InterruptedException {
-        // Given
-        given(resources.getString(R.string.participants_user_input_error)).willReturn("participants_user_input_error");
-
         // When
-        viewModel.setTopic("Topic");
-        viewModel.setRoom(Room.MARIO);
+        viewModel.onTopicChanged("Topic");
+        viewModel.onRoomChanged(Room.MARIO);
         viewModel.createMeeting();
 
-        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
 
         // Then
         assertNull(result.getTopicError());
-        assertEquals("participants_user_input_error", result.getParticipantsError());
-        assertFalse(result.isRoomErrorVisible());
+        assertEquals(EXPECTED_PARTICIPANTS_USER_INPUT_ERROR, result.getParticipantsError());
+        assertNull(result.getRoomError());
         verifyNoInteractions(repository);
     }
 
     @Test
     public void given_participants_are_set_then_deleted_livedata_should_expose_viewmodel_with_participants_error() throws InterruptedException {
-        // Given
-        given(resources.getString(R.string.participants_user_input_error)).willReturn("participants_user_input_error");
-
         // When
-        viewModel.setTopic("Topic");
-        viewModel.setParticipants("participant@mail.org");
-        viewModel.setRoom(Room.MARIO);
-        viewModel.setParticipants("");
+        viewModel.onTopicChanged("Topic");
+        viewModel.onParticipantsChanged("participant@mail.org");
+        viewModel.onRoomChanged(Room.MARIO);
+        viewModel.onParticipantsChanged("");
         viewModel.createMeeting();
 
-        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
 
         // Then
         assertNull(result.getTopicError());
-        assertEquals("participants_user_input_error", result.getParticipantsError());
-        assertFalse(result.isRoomErrorVisible());
+        assertEquals(EXPECTED_PARTICIPANTS_USER_INPUT_ERROR, result.getParticipantsError());
+        assertNull(result.getRoomError());
         verifyNoInteractions(repository);
     }
 
     @Test
     public void given_room_is_not_set_livedata_should_expose_viewmodel_with_room_error() throws InterruptedException {
         // When
-        viewModel.setTopic("Topic");
-        viewModel.setParticipants("participant@mail.org");
+        viewModel.onTopicChanged("Topic");
+        viewModel.onParticipantsChanged("participant@mail.org");
         viewModel.createMeeting();
 
-        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
 
         // Then
         assertNull(result.getTopicError());
         assertNull(result.getParticipantsError());
-        assertTrue(result.isRoomErrorVisible());
+        assertEquals(EXPECTED_ROOM_USER_INPUT_ERROR, result.getRoomError());
         verifyNoInteractions(repository);
     }
 
     @Test
-    public void given_room_is_set_then_deleted_livedata_should_expose_viewmodel_with_room_error() throws InterruptedException {
+    public void verify_click_on_time_edit_text_show_time_picker() throws InterruptedException {
         // When
-        viewModel.setTopic("Topic");
-        viewModel.setParticipants("participant@mail.org");
-        viewModel.setRoom(Room.MARIO);
-        viewModel.setRoom(Room.UNKNOW);
-        viewModel.createMeeting();
-
-        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        viewModel.onTimeEditTextClicked();
+        ViewAction viewActionResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewActionLiveData());
 
         // Then
-        assertNull(result.getTopicError());
-        assertNull(result.getParticipantsError());
-        assertTrue(result.isRoomErrorVisible());
-        verifyNoInteractions(repository);
+        assertTrue(viewActionResult instanceof ViewAction.DisplayTimePicker);
+        assertEquals(new ViewAction.DisplayTimePicker(13, 0), viewActionResult);
+    }
+
+    @Test
+    public void given_time_has_changed_verify_click_on_time_edit_text_show_time_picker() throws InterruptedException {
+        // Given
+        viewModel.onTimeChanged(17, 50);
+
+        // When
+        viewModel.onTimeEditTextClicked();
+        ViewAction viewActionResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewActionLiveData());
+
+        // Then
+        assertTrue(viewActionResult instanceof ViewAction.DisplayTimePicker);
+        assertEquals(new ViewAction.DisplayTimePicker(17, 50), viewActionResult);
     }
 
     @Test
     public void given_nothing_is_set_livedata_should_expose_viewmodel_with_all_errors() throws InterruptedException {
-        // Given
-        given(resources.getString(R.string.topic_user_input_error)).willReturn("topic_user_input_error");
-        given(resources.getString(R.string.participants_user_input_error)).willReturn("participants_user_input_error");
-
         // When
         viewModel.createMeeting();
 
-        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
 
         // Then
-        assertEquals("topic_user_input_error", result.getTopicError());
-        assertEquals("participants_user_input_error", result.getParticipantsError());
-        assertTrue(result.isRoomErrorVisible());
+        assertEquals(EXPECTED_TOPIC_USER_INPUT_ERROR, result.getTopicError());
+        assertEquals(EXPECTED_PARTICIPANTS_USER_INPUT_ERROR, result.getParticipantsError());
+        assertEquals(EXPECTED_ROOM_USER_INPUT_ERROR, result.getRoomError());
         verifyNoInteractions(repository);
     }
 
     @Test
     public void given_nothing_is_set_then_topic_is_set_livedata_should_expose_viewmodel_with_some_errors() throws InterruptedException {
-        // Given
-        given(resources.getString(R.string.topic_user_input_error)).willReturn("topic_user_input_error");
-        given(resources.getString(R.string.participants_user_input_error)).willReturn("participants_user_input_error");
-
         // When
         viewModel.createMeeting();
 
-        CreateMeetingViewState firstResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
-
-        viewModel.setTopic("Topic");
-        viewModel.createMeeting();
-
-        CreateMeetingViewState secondResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState firstResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
 
         // Then
-        assertEquals("topic_user_input_error", firstResult.getTopicError());
-        assertEquals("participants_user_input_error", firstResult.getParticipantsError());
-        assertTrue(firstResult.isRoomErrorVisible());
+        assertEquals(EXPECTED_TOPIC_USER_INPUT_ERROR, firstResult.getTopicError());
+        assertEquals(EXPECTED_PARTICIPANTS_USER_INPUT_ERROR, firstResult.getParticipantsError());
+        assertEquals(EXPECTED_ROOM_USER_INPUT_ERROR, firstResult.getRoomError());
 
+        // When 2
+        viewModel.onTopicChanged("Topic");
+        viewModel.createMeeting();
+
+        CreateMeetingViewState secondResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+
+        // Then 2
         assertNull(secondResult.getTopicError());
-        assertEquals("participants_user_input_error", secondResult.getParticipantsError());
-        assertTrue(secondResult.isRoomErrorVisible());
+        assertEquals(EXPECTED_PARTICIPANTS_USER_INPUT_ERROR, secondResult.getParticipantsError());
+        assertEquals(EXPECTED_ROOM_USER_INPUT_ERROR, secondResult.getRoomError());
+
         verifyNoInteractions(repository);
     }
 
     @Test
     public void given_nothing_is_set_then_everything_is_set_livedata_should_expose_viewmodel_with_no_error() throws InterruptedException {
-        // Given
-        given(resources.getString(R.string.topic_user_input_error)).willReturn("topic_user_input_error");
-        given(resources.getString(R.string.participants_user_input_error)).willReturn("participants_user_input_error");
-
         // When
         viewModel.createMeeting();
-
-        CreateMeetingViewState firstResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
-
-        viewModel.setTopic("Topic");
-        viewModel.setParticipants("participant@mail.org");
-        viewModel.setRoom(Room.MARIO);
+        viewModel.onTopicChanged("Topic");
+        viewModel.onParticipantsChanged("participant@mail.org");
+        viewModel.onRoomChanged(Room.MARIO);
         viewModel.createMeeting();
 
-        CreateMeetingViewState secondResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getCreateMeetingModelLiveData());
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
         ViewAction viewActionResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewActionLiveData());
 
         // Then
-        assertEquals("topic_user_input_error", firstResult.getTopicError());
-        assertEquals("participants_user_input_error", firstResult.getParticipantsError());
-        assertTrue(firstResult.isRoomErrorVisible());
-
-        assertEquals(ViewAction.CLOSE_ACTIVITY, viewActionResult);
-        assertNull(secondResult.getTopicError());
-        assertNull(secondResult.getParticipantsError());
-        assertFalse(secondResult.isRoomErrorVisible());
+        assertTrue(viewActionResult instanceof ViewAction.CloseActivity);
+        assertNull(result.getTopicError());
+        assertNull(result.getParticipantsError());
+        assertNull(result.getRoomError());
 
         verifyRepoAddedMeeting();
     }
 
+    @Test
+    public void given_nothing_is_set_then_everything_is_set_livedata_should_expose_viewmodel_with_no_error_bis() throws InterruptedException {
+        // When
+        viewModel.createMeeting();
+        viewModel.onParticipantsChanged("participant@mail.org");
+        viewModel.onTopicChanged("Topic");
+        viewModel.onRoomChanged(Room.MARIO);
+        viewModel.createMeeting();
+
+        CreateMeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        ViewAction viewActionResult = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewActionLiveData());
+
+        // Then
+        assertTrue(viewActionResult instanceof ViewAction.CloseActivity);
+        assertNull(result.getTopicError());
+        assertNull(result.getParticipantsError());
+        assertNull(result.getRoomError());
+
+        verifyRepoAddedMeeting();
+    }
+
+    // region IN
+    @NonNull
+    private Clock getDefaultClock(LocalDate localDate, LocalTime localTime) {
+        return Clock.fixed(
+            LocalDateTime
+                .of(
+                    localDate,
+                    localTime
+                )
+                .toInstant(ZoneOffset.UTC),
+            ZoneOffset.UTC
+        );
+    }
+
+    @NonNull
+    private LocalTime getDefaultLocalTime() {
+        return LocalTime.of(12, 50);
+    }
+
+    @NonNull
+    private LocalDate getDefaultLocalDate() {
+        return LocalDate.of(1991, 2, 26);
+    }
+    // endregion
+
+    // region OUT
     private void verifyRepoAddedMeeting() {
         verify(repository).addMeeting(
             eq("Topic"),
-            eq(LocalTime.of(12, 50)),
+            eq(LocalTime.of(13, 0)),
             eq(new ArrayList<String>() {{
                 add("participant@mail.org");
             }}),
@@ -348,4 +487,5 @@ public class CreateMeetingViewModelTest {
         );
         verifyNoMoreInteractions(repository);
     }
+    // endregion
 }

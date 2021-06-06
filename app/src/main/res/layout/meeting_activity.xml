@@ -62,6 +62,6 @@
         android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
         android:contentDescription="@string/content_description_add"
-        android:src="@drawable/ic_add_white_24dp" />
+        android:src="@drawable/ic_add_24" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

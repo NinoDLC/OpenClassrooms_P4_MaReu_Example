@@ -10,15 +10,20 @@ import androidx.lifecycle.ViewModel;
 
 import java.time.Clock;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import fr.delcey.mareu.R;
-import fr.delcey.mareu.domain.MeetingRepository;
-import fr.delcey.mareu.domain.pojo.Room;
+import fr.delcey.mareu.data.meeting.MeetingRepository;
+import fr.delcey.mareu.data.meeting.model.Room;
 import fr.delcey.mareu.utils.livedata.SingleLiveEvent;
 
 public class CreateMeetingViewModel extends ViewModel {
+
+    private static final int NEAREST_MINUTE_ROUNDING = 30;
 
     @NonNull
     private final Resources resources;
@@ -26,7 +31,10 @@ public class CreateMeetingViewModel extends ViewModel {
     @NonNull
     private final MeetingRepository meetingRepository;
 
-    private final MutableLiveData<CreateMeetingViewState> createMeetingModelMutableLiveData = new MutableLiveData<>();
+    @NonNull
+    private final DateTimeFormatter hourDateTimeFormatter;
+
+    private final MutableLiveData<CreateMeetingViewState> createMeetingViewStateMutableLiveData = new MutableLiveData<>();
 
     private final SingleLiveEvent<ViewAction> viewActionSingleLiveEvent = new SingleLiveEvent<>();
 
@@ -34,57 +42,62 @@ public class CreateMeetingViewModel extends ViewModel {
     private String topic;
     @NonNull
     private final List<String> participants = new ArrayList<>();
-    @NonNull
-    private Room room = Room.UNKNOW;
+    @Nullable
+    private Room room;
     @NonNull
     private LocalTime time;
 
     public CreateMeetingViewModel(
         @NonNull Resources resources,
         @NonNull MeetingRepository meetingRepository,
+        @NonNull DateTimeFormatter hourDateTimeFormatter,
         @NonNull Clock clock
     ) {
         this.resources = resources;
         this.meetingRepository = meetingRepository;
-        this.time = LocalTime.now(clock);
+        this.hourDateTimeFormatter = hourDateTimeFormatter;
 
-        createMeetingModelMutableLiveData.setValue(
+        this.time = roundTimeToNext30Min(LocalTime.now(clock));
+
+        createMeetingViewStateMutableLiveData.setValue(
             new CreateMeetingViewState(
                 Room.values(),
+                formatTime(),
                 null,
                 null,
-                false
+                null
             )
         );
     }
 
     @NonNull
-    public LiveData<CreateMeetingViewState> getCreateMeetingModelLiveData() {
-        return createMeetingModelMutableLiveData;
+    public LiveData<CreateMeetingViewState> getViewStateLiveData() {
+        return createMeetingViewStateMutableLiveData;
     }
 
     public LiveData<ViewAction> getViewActionLiveData() {
         return viewActionSingleLiveEvent;
     }
 
-    public void setTopic(@NonNull String topic) {
+    public void onTopicChanged(@NonNull String topic) {
         this.topic = topic;
 
-        CreateMeetingViewState currentModel = createMeetingModelMutableLiveData.getValue();
+        CreateMeetingViewState currentViewState = createMeetingViewStateMutableLiveData.getValue();
 
-        if (!topic.isEmpty() && currentModel != null && currentModel.getTopicError() != null) {
-            createMeetingModelMutableLiveData.setValue(
+        if (!topic.isEmpty() && currentViewState != null && currentViewState.getTopicError() != null) {
+            createMeetingViewStateMutableLiveData.setValue(
                 new CreateMeetingViewState(
-                    Room.values(),
+                    currentViewState.getRooms(),
+                    currentViewState.getTime(),
                     null,
-                    currentModel.getParticipantsError(),
-                    currentModel.isRoomErrorVisible()
+                    currentViewState.getParticipantsError(),
+                    currentViewState.getRoomError()
                 )
             );
         }
     }
 
-    public void setParticipants(@NonNull String userInputParticipants) {
+    public void onParticipantsChanged(@NonNull String userInputParticipants) {
         participants.clear();
 
         String[] participantsList = userInputParticipants.split("[,; \n]");
@@ -97,59 +110,77 @@ public class CreateMeetingViewModel extends ViewModel {
             }
         }
 
-        CreateMeetingViewState currentModel = createMeetingModelMutableLiveData.getValue();
+        CreateMeetingViewState currentViewState = createMeetingViewStateMutableLiveData.getValue();
 
-        if (!participants.isEmpty() && currentModel != null && currentModel.getTopicError() != null) {
-            createMeetingModelMutableLiveData.setValue(
+        if (!participants.isEmpty() && currentViewState != null && currentViewState.getTopicError() != null) {
+            createMeetingViewStateMutableLiveData.setValue(
                 new CreateMeetingViewState(
-                    Room.values(),
-                    currentModel.getTopicError(),
+                    currentViewState.getRooms(),
+                    currentViewState.getTime(),
+                    currentViewState.getTopicError(),
                     null,
-                    currentModel.isRoomErrorVisible()
+                    currentViewState.getRoomError()
                 )
             );
         }
     }
 
-    public void setRoom(@NonNull Room room) {
+    public void onRoomChanged(@Nullable Room room) {
         this.room = room;
 
-        CreateMeetingViewState currentModel = createMeetingModelMutableLiveData.getValue();
+        CreateMeetingViewState currentViewState = createMeetingViewStateMutableLiveData.getValue();
 
-        if (room != Room.UNKNOW && currentModel != null && currentModel.isRoomErrorVisible()) {
-            createMeetingModelMutableLiveData.setValue(
+        if (room != null && currentViewState != null && currentViewState.getRoomError() != null) {
+            createMeetingViewStateMutableLiveData.setValue(
                 new CreateMeetingViewState(
-                    Room.values(),
-                    currentModel.getTopicError(),
-                    currentModel.getParticipantsError(),
-                    currentModel.isRoomErrorVisible()
+                    currentViewState.getRooms(),
+                    currentViewState.getTime(),
+                    currentViewState.getTopicError(),
+                    currentViewState.getParticipantsError(),
+                    null
                 )
             );
         }
     }
 
-    public void setTime(int hour, int minute) {
+    public void onTimeEditTextClicked() {
+        viewActionSingleLiveEvent.setValue(new ViewAction.DisplayTimePicker(time.getHour(), time.getMinute()));
+    }
+
+    public void onTimeChanged(int hour, int minute) {
         time = LocalTime.of(hour, minute);
+
+        CreateMeetingViewState currentViewState = createMeetingViewStateMutableLiveData.getValue();
+
+        if (currentViewState != null) {
+            createMeetingViewStateMutableLiveData.setValue(
+                new CreateMeetingViewState(
+                    currentViewState.getRooms(),
+                    formatTime(),
+                    currentViewState.getTopicError(),
+                    currentViewState.getParticipantsError(),
+                    currentViewState.getRoomError()
+                )
+            );
+        }
     }
 
     public void createMeeting() {
-        boolean areUserInputOk = verifyUserInputs();
+        VerifiedInputs verifiedInputs = verifyUserInputs();
 
-        if (areUserInputOk) {
-            assert topic != null;
-
+        if (verifiedInputs != null) {
             meetingRepository.addMeeting(
-                topic,
-                time,
-                participants,
-                room
+                verifiedInputs.topic,
+                verifiedInputs.time,
+                verifiedInputs.participants,
+                verifiedInputs.room
             );
 
-            viewActionSingleLiveEvent.setValue(ViewAction.CLOSE_ACTIVITY);
+            viewActionSingleLiveEvent.setValue(new ViewAction.CloseActivity());
         }
     }
 
-    private boolean verifyUserInputs() {
+    private VerifiedInputs verifyUserInputs() {
         boolean areUserInputOk = true;
 
         String topicError;
@@ -168,27 +199,106 @@ public class CreateMeetingViewModel extends ViewModel {
             participantsError = null;
         }
 
-        boolean isRoomErrorVisible;
-        if (room == Room.UNKNOW) {
-            isRoomErrorVisible = true;
+        String roomError;
+        if (room == null) {
+            roomError = resources.getString(R.string.room_user_input_error);
             areUserInputOk = false;
         } else {
-            isRoomErrorVisible = false;
+            roomError = null;
         }
 
-        createMeetingModelMutableLiveData.setValue(
+        createMeetingViewStateMutableLiveData.setValue(
             new CreateMeetingViewState(
                 Room.values(),
+                formatTime(),
                 topicError,
                 participantsError,
-                isRoomErrorVisible
+                roomError
             )
         );
 
-        return areUserInputOk;
+        if (areUserInputOk) {
+            return new VerifiedInputs(
+                topic,
+                participants,
+                room,
+                time
+            );
+        }
+
+        return null;
     }
 
-    enum ViewAction {
-        CLOSE_ACTIVITY
+    @NonNull
+    private String formatTime() {
+        return hourDateTimeFormatter.format(time);
+    }
+
+    @NonNull
+    private LocalTime roundTimeToNext30Min(@NonNull LocalTime localTime) {
+        return localTime
+            .truncatedTo(ChronoUnit.HOURS)
+            .plusMinutes((long) (NEAREST_MINUTE_ROUNDING * Math.ceil(localTime.getMinute() / (float) NEAREST_MINUTE_ROUNDING)));
+    }
+
+
+    abstract static class ViewAction {
+        static class CloseActivity extends ViewAction {
+        }
+
+        static class DisplayTimePicker extends ViewAction {
+            private final int hour;
+            private final int minute;
+
+            DisplayTimePicker(int hour, int minute) {
+                this.hour = hour;
+                this.minute = minute;
+            }
+
+            public int getHour() {
+                return hour;
+            }
+
+            public int getMinute() {
+                return minute;
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+                DisplayTimePicker that = (DisplayTimePicker) o;
+                return hour == that.hour && minute == that.minute;
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(hour, minute);
+            }
+
+            @NonNull
+            @Override
+            public String toString() {
+                return "DisplayTimePicker{" + "hour=" + hour + ", minute=" + minute + '}';
+            }
+        }
+    }
+
+    private static class VerifiedInputs {
+        @NonNull
+        private final String topic;
+        @NonNull
+        private final List<String> participants;
+        @NonNull
+        private final Room room;
+        @NonNull
+        private final LocalTime time;
+
+        public VerifiedInputs(@NonNull String topic, @NonNull List<String> participants, @NonNull Room room, @NonNull LocalTime time) {
+            this.topic = topic;
+            this.participants = participants;
+            this.room = room;
+            this.time = time;
+        }
     }
 }

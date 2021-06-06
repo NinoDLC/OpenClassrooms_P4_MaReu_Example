@@ -15,15 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.delcey.mareu.R;
-import fr.delcey.mareu.domain.MeetingRepository;
-import fr.delcey.mareu.domain.pojo.Meeting;
+import fr.delcey.mareu.data.meeting.MeetingRepository;
+import fr.delcey.mareu.data.meeting.model.Meeting;
+import fr.delcey.mareu.utils.livedata.SingleLiveEvent;
 
 import static java.time.temporal.ChronoUnit.HOURS;
 import static java.time.temporal.ChronoUnit.MINUTES;
 
 public class MeetingDetailViewModel extends ViewModel {
-
-    private final MediatorLiveData<MeetingDetailViewState> viewStateMediatorLiveData = new MediatorLiveData<>();
 
     @NonNull
     private final Application application;
@@ -37,7 +36,16 @@ public class MeetingDetailViewModel extends ViewModel {
     @NonNull
     private final Clock clock;
 
-    public MeetingDetailViewModel(@NonNull Application application, @NonNull Resources resources, @NonNull MeetingRepository meetingRepository, @NonNull Clock clock) {
+    private final MediatorLiveData<MeetingDetailViewState> viewStateMediatorLiveData = new MediatorLiveData<>();
+
+    private final SingleLiveEvent<MeetingDetailViewAction> viewActionSingleLiveEvent = new SingleLiveEvent<>();
+
+    public MeetingDetailViewModel(
+        @NonNull Application application,
+        @NonNull Resources resources,
+        @NonNull MeetingRepository meetingRepository,
+        @NonNull Clock clock
+    ) {
         this.application = application;
         this.resources = resources;
         this.meetingRepository = meetingRepository;
@@ -68,10 +76,10 @@ public class MeetingDetailViewModel extends ViewModel {
         for (String participantUrl : meeting.getParticipants()) {
             String name;
 
-            int indexOfAtSign =  participantUrl.indexOf('@');
+            int indexOfAtSign = participantUrl.indexOf('@');
 
             if (indexOfAtSign != -1) {
-                name = participantUrl.substring(0,indexOfAtSign);
+                name = participantUrl.substring(0, indexOfAtSign);
             } else {
                 name = participantUrl;
             }
@@ -107,8 +115,14 @@ public class MeetingDetailViewModel extends ViewModel {
         );
     }
 
+    @NonNull
     public LiveData<MeetingDetailViewState> getViewStateLiveData() {
         return viewStateMediatorLiveData;
+    }
+
+    @NonNull
+    public SingleLiveEvent<MeetingDetailViewAction> getViewActionSingleLiveEvent() {
+        return viewActionSingleLiveEvent;
     }
 
     public void onParticipantClicked(MeetingDetailViewState.Participant participant) {
@@ -117,8 +131,24 @@ public class MeetingDetailViewModel extends ViewModel {
         intent.putExtra(Intent.EXTRA_EMAIL, new String[]{participant.getParticipantUrl()});
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        if (intent.resolveActivity(application.getPackageManager()) != null) {
-            application.startActivity(intent);
+        viewActionSingleLiveEvent.setValue(new MeetingDetailViewAction.LaunchIntent(intent));
+    }
+
+    public static abstract class MeetingDetailViewAction {
+
+        public static class LaunchIntent extends MeetingDetailViewAction {
+
+            @NonNull
+            private final Intent intent;
+
+            public LaunchIntent(@NonNull Intent intent) {
+                this.intent = intent;
+            }
+
+            @NonNull
+            public Intent getIntent() {
+                return intent;
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import fr.delcey.mareu.domain.pojo.Room;
+import fr.delcey.mareu.data.meeting.model.Room;
 
 public class Mock {
 

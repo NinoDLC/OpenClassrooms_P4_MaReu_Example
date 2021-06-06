@@ -60,7 +60,7 @@
             android:background="?selectableItemBackground"
             android:contentDescription="@string/content_description_delete"
             android:padding="16dp"
-            android:src="@drawable/ic_delete_black_24dp"
+            android:src="@drawable/ic_delete_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

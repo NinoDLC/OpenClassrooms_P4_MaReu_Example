@@ -49,7 +49,7 @@ public class HourFilterAdapter extends ListAdapter<MeetingViewStateHourFilterIte
             textViewHour.setText(item.getHour());
             textViewHour.setBackgroundResource(item.getDrawableResBackground());
             textViewHour.setTextColor(ContextCompat.getColor(textViewHour.getContext(), item.getTextColorRes()));
-            textViewHour.setOnClickListener(v -> listener.onHourSelected(item.getHour()));
+            textViewHour.setOnClickListener(v -> listener.onHourSelected(item.getHourLocalTime()));
         }
     }
 

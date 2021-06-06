@@ -20,13 +20,19 @@ public class MeetingDetailViewState {
     @NonNull
     private final String scheduleMessage;
 
-    public MeetingDetailViewState(int meetingIcon, @NonNull String topic, @NonNull List<Participant> participants, @NonNull String scheduleMessage) {
+    public MeetingDetailViewState(
+        @DrawableRes int meetingIcon,
+        @NonNull String topic,
+        @NonNull List<Participant> participants,
+        @NonNull String scheduleMessage
+    ) {
         this.meetingIcon = meetingIcon;
         this.topic = topic;
         this.participants = participants;
         this.scheduleMessage = scheduleMessage;
     }
 
+    @DrawableRes
     public int getMeetingIcon() {
         return meetingIcon;
     }
@@ -82,7 +88,6 @@ public class MeetingDetailViewState {
         private final String participantUrl;
 
         public Participant(@NonNull String name, @NonNull String participantUrl) {
-
             this.name = name;
             this.participantUrl = participantUrl;
         }

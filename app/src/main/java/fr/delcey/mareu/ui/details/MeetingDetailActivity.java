@@ -21,6 +21,7 @@ import java.util.List;
 
 import fr.delcey.mareu.R;
 import fr.delcey.mareu.ViewModelFactory;
+import fr.delcey.mareu.ui.details.MeetingDetailViewModel.MeetingDetailViewAction.LaunchIntent;
 
 import static fr.delcey.mareu.ui.TransitionUtils.getMeetingRoomTransitionName;
 import static fr.delcey.mareu.ui.TransitionUtils.getMeetingTopicTransitionName;
@@ -47,7 +48,9 @@ public class MeetingDetailActivity extends AppCompatActivity {
         int meetingId = getIntent().getIntExtra(EXTRA_MEETING_ID, -1);
 
         MeetingDetailViewModel viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(MeetingDetailViewModel.class);
-        viewModel.init(meetingId);
+        if (savedInstanceState == null) {
+            viewModel.init(meetingId);
+        }
 
         ImageView roomImageView = findViewById(R.id.detail_meeting_iv_room);
         TextView topicTextView = findViewById(R.id.detail_meeting_tv_topic);
@@ -57,11 +60,20 @@ public class MeetingDetailActivity extends AppCompatActivity {
         roomImageView.setTransitionName(getMeetingRoomTransitionName(meetingId));
         topicTextView.setTransitionName(getMeetingTopicTransitionName(meetingId));
 
-        viewModel.getViewStateLiveData().observe(this, meetingDetailViewState -> {
-            roomImageView.setImageResource(meetingDetailViewState.getMeetingIcon());
-            topicTextView.setText(meetingDetailViewState.getTopic());
-            manageChips(viewModel, participantsChipGroup, meetingDetailViewState.getParticipants());
-            scheduleTextView.setText(meetingDetailViewState.getScheduleMessage());
+        viewModel.getViewStateLiveData().observe(this, viewState -> {
+            roomImageView.setImageResource(viewState.getMeetingIcon());
+            topicTextView.setText(viewState.getTopic());
+            manageChips(viewModel, participantsChipGroup, viewState.getParticipants());
+            scheduleTextView.setText(viewState.getScheduleMessage());
+        });
+
+        viewModel.getViewActionSingleLiveEvent().observe(this, viewAction -> {
+            if (viewAction instanceof LaunchIntent) {
+                LaunchIntent casted = (LaunchIntent) viewAction;
+                if (casted.getIntent().resolveActivity(getPackageManager()) != null) {
+                    startActivity(casted.getIntent());
+                }
+            }
         });
     }
 

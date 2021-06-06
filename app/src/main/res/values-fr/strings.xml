@@ -12,15 +12,15 @@
 
     <string name="meeting_title">%s - %s - %s</string>
     <string name="content_description_delete">Supprimer</string>
-    <string name="room">Salle :</string>
+    <string name="room">Salle</string>
+    <string name="time">Heure</string>
     <string name="topic">Sujet de la réunion</string>
     <string name="participants">Participants</string>
 
-    <string name="select_a_room_error">Sélectionnez une salle</string>
     <string name="topic_user_input_error">Veuillez renseigner un intitulé de réunion</string>
     <string name="participants_user_input_error">Veuillez renseigner au moins un participant</string>
+    <string name="room_user_input_error">Sélectionnez une salle</string>
 
-    <string name="empty" />
     <string name="create_meeting_title">Créer une nouvelle réunion</string>
 
     <string name="detail_meeting_title">Détails de la réunion</string>

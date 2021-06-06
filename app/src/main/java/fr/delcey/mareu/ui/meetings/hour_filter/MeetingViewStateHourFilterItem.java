@@ -4,9 +4,13 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
+import java.time.LocalTime;
 import java.util.Objects;
 
 public class MeetingViewStateHourFilterItem {
+
+    @NonNull
+    private final LocalTime hourLocalTime;
 
     @NonNull
     private final String hour;
@@ -17,10 +21,21 @@ public class MeetingViewStateHourFilterItem {
     @ColorRes
     private final int textColorRes;
 
-    public MeetingViewStateHourFilterItem(@NonNull String hour, @DrawableRes int drawableResBackground, @ColorRes int textColorRes) {
+    public MeetingViewStateHourFilterItem(
+        @NonNull LocalTime hourLocalTime,
+        @NonNull String hour,
+        @DrawableRes int drawableResBackground,
+        @ColorRes int textColorRes
+    ) {
+        this.hourLocalTime = hourLocalTime;
         this.hour = hour;
         this.drawableResBackground = drawableResBackground;
         this.textColorRes = textColorRes;
+    }
+
+    @NonNull
+    public LocalTime getHourLocalTime() {
+        return hourLocalTime;
     }
 
     @NonNull

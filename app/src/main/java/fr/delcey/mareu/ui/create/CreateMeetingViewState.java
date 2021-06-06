@@ -3,12 +3,15 @@ package fr.delcey.mareu.ui.create;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import fr.delcey.mareu.domain.pojo.Room;
+import fr.delcey.mareu.data.meeting.model.Room;
 
 class CreateMeetingViewState {
 
     @NonNull
-    private final Room[] spinnerData;
+    private final Room[] rooms;
+
+    @NonNull
+    private final String time;
 
     @Nullable
     private final String topicError;
@@ -16,23 +19,31 @@ class CreateMeetingViewState {
     @Nullable
     private final String participantsError;
 
-    private final boolean isRoomErrorVisible;
+    @Nullable
+    private final String roomError;
 
     public CreateMeetingViewState(
-        @NonNull Room[] spinnerData,
+        @NonNull Room[] rooms,
+        @NonNull String time,
         @Nullable String topicError,
         @Nullable String participantsError,
-        boolean isRoomErrorVisible
+        @Nullable String roomError
     ) {
-        this.spinnerData = spinnerData;
+        this.rooms = rooms;
+        this.time = time;
         this.topicError = topicError;
         this.participantsError = participantsError;
-        this.isRoomErrorVisible = isRoomErrorVisible;
+        this.roomError = roomError;
     }
 
     @NonNull
-    public Room[] getSpinnerData() {
-        return spinnerData;
+    public Room[] getRooms() {
+        return rooms;
+    }
+
+    @NonNull
+    public String getTime() {
+        return time;
     }
 
     @Nullable
@@ -45,7 +56,8 @@ class CreateMeetingViewState {
         return participantsError;
     }
 
-    public boolean isRoomErrorVisible() {
-        return isRoomErrorVisible;
+    @Nullable
+    public String getRoomError() {
+        return roomError;
     }
 }

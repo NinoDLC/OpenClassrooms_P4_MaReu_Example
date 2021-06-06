@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-import fr.delcey.mareu.domain.pojo.Room;
+import fr.delcey.mareu.data.meeting.model.Room;
 
 public class RoomSpinnerItemMatcher extends TypeSafeMatcher<Room> {
     private final Room room;

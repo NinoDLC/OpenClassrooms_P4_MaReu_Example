@@ -12,15 +12,15 @@
 
     <string name="meeting_title">%s - %s - %s</string>
     <string name="content_description_delete">Delete</string>
-    <string name="room">Room :</string>
+    <string name="room">Room</string>
+    <string name="time">Time</string>
     <string name="topic">Topic</string>
     <string name="participants">Participants</string>
 
-    <string name="select_a_room_error">Please select a room</string>
     <string name="topic_user_input_error">Please insert a topic</string>
     <string name="participants_user_input_error">Please insert at least one participant</string>
+    <string name="room_user_input_error">Please select a room</string>
 
-    <string name="empty" />
     <string name="create_meeting_title">Create a new meeting</string>
 
     <string name="detail_meeting_title">Meeting details</string>

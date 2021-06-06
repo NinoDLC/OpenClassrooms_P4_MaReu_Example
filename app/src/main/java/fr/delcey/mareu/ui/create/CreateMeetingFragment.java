@@ -1,19 +1,13 @@
 package fr.delcey.mareu.ui.create;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,10 +15,12 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 
 import fr.delcey.mareu.R;
 import fr.delcey.mareu.ViewModelFactory;
-import fr.delcey.mareu.domain.pojo.Room;
+import fr.delcey.mareu.data.meeting.model.Room;
 
 import static fr.delcey.mareu.ui.create.CreateMeetingViewModel.ViewAction;
 
@@ -35,7 +31,7 @@ public class CreateMeetingFragment extends Fragment {
         return new CreateMeetingFragment();
     }
 
-    private boolean isRoomSpinnerInitialized;
+    private boolean isRoomAutocompleteViewInitialized;
 
     @Nullable
     @Override
@@ -59,45 +55,50 @@ public class CreateMeetingFragment extends Fragment {
         EditText participantsEditText = view.findViewById(R.id.create_meeting_et_participants);
         initParticipantsEditText(viewModel, participantsEditText);
 
-        TimePicker timePicker = view.findViewById(R.id.create_meeting_tp);
-        initTimePicker(viewModel, timePicker);
+        AutoCompleteTextView autocompleteTextViewRoom = view.findViewById(R.id.create_meeting_actv_room);
+
+        EditText timeEditText = view.findViewById(R.id.create_meeting_et_time);
+        timeEditText.setOnClickListener(v -> viewModel.onTimeEditTextClicked());
 
         FloatingActionButton validateButton = view.findViewById(R.id.create_meeting_fab_validate);
-        initValidateButton(viewModel, validateButton);
+        validateButton.setOnClickListener(validateButtonView -> viewModel.createMeeting());
 
-        Spinner roomSpinner = view.findViewById(R.id.create_meeting_spi_room);
-        TextView roomSpinnerError = view.findViewById(R.id.create_meeting_tv_room_error);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            viewModel.setTime(timePicker.getHour(), timePicker.getMinute());
-        } else {
-            viewModel.setTime(timePicker.getCurrentHour(), timePicker.getCurrentMinute());
-        }
-
-        viewModel.getCreateMeetingModelLiveData().observe(getViewLifecycleOwner(), createMeetingViewState -> {
+        viewModel.getViewStateLiveData().observe(getViewLifecycleOwner(), viewState -> {
             // One of the few "if"s that could be tolerated in Activity or Fragment :
             // this is because spinner adapter is a terrible class not made for MVVM
-            if (!isRoomSpinnerInitialized) {
-                isRoomSpinnerInitialized = true;
-                initRoomSpinner(viewModel, roomSpinner, createMeetingViewState.getSpinnerData());
+            // This is purely for performance purposes, it doesn't modify behavior, it can be removed
+            if (!isRoomAutocompleteViewInitialized) {
+                isRoomAutocompleteViewInitialized = true;
+                initRoomAutocompleteView(viewModel, autocompleteTextViewRoom, viewState.getRooms());
             }
-            topicEditText.setError(createMeetingViewState.getTopicError());
-            participantsEditText.setError(createMeetingViewState.getParticipantsError());
-            roomSpinnerError.setVisibility(createMeetingViewState.isRoomErrorVisible() ? View.VISIBLE : View.GONE);
+            topicEditText.setError(viewState.getTopicError());
+            participantsEditText.setError(viewState.getParticipantsError());
+            autocompleteTextViewRoom.setError(viewState.getRoomError());
+            timeEditText.setText(viewState.getTime());
         });
 
         viewModel.getViewActionLiveData().observe(getViewLifecycleOwner(), viewAction -> {
-            if (viewAction == ViewAction.CLOSE_ACTIVITY) {
+            if (viewAction instanceof ViewAction.CloseActivity) {
                 // This is bad practice, a fragment shouldn't close its activity, but for simplicity's sake...
                 // https://developer.android.com/training/basics/fragments/communicating
                 requireActivity().finish();
+            } else if (viewAction instanceof ViewAction.DisplayTimePicker) {
+                ViewAction.DisplayTimePicker casted = (ViewAction.DisplayTimePicker) viewAction;
+
+                MaterialTimePicker materialDatePicker = new MaterialTimePicker.Builder()
+                    .setTimeFormat(TimeFormat.CLOCK_24H)
+                    .setHour(casted.getHour())
+                    .setMinute(casted.getMinute())
+                    .build();
+                materialDatePicker.addOnPositiveButtonClickListener(button ->
+                    viewModel.onTimeChanged(materialDatePicker.getHour(), materialDatePicker.getMinute())
+                );
+                materialDatePicker.show(getParentFragmentManager(), null);
             }
         });
     }
 
     private void initTopicEditText(@NonNull CreateMeetingViewModel viewModel, @NonNull EditText topicEditText) {
-        topicEditText.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-        topicEditText.setRawInputType(InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
         topicEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -109,14 +110,12 @@ public class CreateMeetingFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                viewModel.setTopic(s.toString());
+                viewModel.onTopicChanged(s.toString());
             }
         });
     }
 
     private void initParticipantsEditText(@NonNull CreateMeetingViewModel viewModel, @NonNull EditText participantsEditText) {
-        participantsEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        participantsEditText.setRawInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         participantsEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -128,36 +127,20 @@ public class CreateMeetingFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                viewModel.setParticipants(s.toString());
+                viewModel.onParticipantsChanged(s.toString());
             }
         });
     }
 
-    private void initRoomSpinner(@NonNull CreateMeetingViewModel viewModel, @NonNull Spinner roomSpinner, @NonNull Room[] spinnerData) {
-        final CreateMeetingSpinnerAdapter adapter = new CreateMeetingSpinnerAdapter(requireContext(), spinnerData);
-        roomSpinner.setAdapter(adapter);
-        roomSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Room room = adapter.getItem(position);
-
-                if (room != null) {
-                    viewModel.setRoom(room);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-    }
-
-    private void initTimePicker(@NonNull CreateMeetingViewModel viewModel, @NonNull TimePicker timePicker) {
-        timePicker.setOnTimeChangedListener((view, hourOfDay, minute) -> viewModel.setTime(hourOfDay, minute));
-    }
-
-    private void initValidateButton(@NonNull CreateMeetingViewModel viewModel, @NonNull FloatingActionButton validateButton) {
-        validateButton.setOnClickListener(view -> viewModel.createMeeting());
+    private void initRoomAutocompleteView(
+        @NonNull CreateMeetingViewModel viewModel,
+        @NonNull AutoCompleteTextView autoCompleteTextView,
+        @NonNull Room[] rooms
+    ) {
+        final CreateMeetingSpinnerAdapter adapter = new CreateMeetingSpinnerAdapter(requireContext(), rooms);
+        autoCompleteTextView.setAdapter(adapter);
+        autoCompleteTextView.setOnItemClickListener((parent, view, position, id) ->
+            viewModel.onRoomChanged(adapter.getItem(position))
+        );
     }
 }
