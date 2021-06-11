@@ -41,8 +41,6 @@ public class MeetingActivity extends AppCompatActivity implements
     OnRoomSelectedListener,
     OnHourSelectedListener {
 
-    private static final String TAG_DIALOG_SORTING = "SortDialogFragment";
-
     private CoordinatorLayout rootView;
     private RecyclerView recyclerViewRoom;
     private RecyclerView recyclerViewHour;
@@ -94,7 +92,7 @@ public class MeetingActivity extends AppCompatActivity implements
     private void initSortingDialog() {
         viewModel.getViewActionSingleLiveEvent().observe(this, viewAction -> {
             if (viewAction == MeetingViewAction.DISPLAY_SORTING_DIALOG) {
-                SortDialogFragment.newInstance().show(getSupportFragmentManager(), TAG_DIALOG_SORTING);
+                SortDialogFragment.newInstance().show(getSupportFragmentManager(), null);
             }
         });
     }
