@@ -20,7 +20,6 @@
         <item name="android:windowSharedElementExitTransition">@transition/autotransition</item>
 
         <item name="textInputStyle">@style/Widget.MaReu.TextInputLayout</item>
-        <item name="spinnerStyle">@style/Widget.MaReu.Spinner</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
