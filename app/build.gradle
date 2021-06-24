@@ -49,16 +49,16 @@ dependencies {
     // Helps testing livedata : InstantTaskExecutorRule, for example
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
     // Helps mocking objects (Mockito.mock() or Mockito.spy())
-    testImplementation 'org.mockito:mockito-core:3.10.0'
+    testImplementation 'org.mockito:mockito-core:3.11.1'
     // Helps asserting (lists for example)
     testImplementation 'org.hamcrest:hamcrest-library:2.2'
 
-    // Allow use of "PickerAction" for example : https://developer.android.com/reference/androidx/test/espresso/contrib/package-summary
+    // Allow use of "RecyclerViewActions" for example : https://developer.android.com/reference/androidx/test/espresso/contrib/package-summary
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.3.0'
     // Base dependency for Espresso
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
 
-    androidTestUtil 'androidx.test:orchestrator:1.4.0-beta01'
+    androidTestUtil 'androidx.test:orchestrator:1.4.0-rc01'
 }
 
 android.applicationVariants.all { variant ->

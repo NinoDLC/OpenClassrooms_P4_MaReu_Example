@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import fr.delcey.mareu.R;
 import fr.delcey.mareu.data.meeting.model.Room;
 
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
@@ -18,15 +19,17 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.is;
 
 public class CreateMeetingUtils {
 
     /**
      * Creates a meeting, given we are on the CreateMeetingFragment. Provide a null argument to ignore
-     * @param topic if null, won't change the current topic, else, change it
+     *
+     * @param topic        if null, won't change the current topic, else, change it
      * @param participants if null, won't change the current participants, else, change it
-     * @param room if null, won't change the current room, else, change it
-     * @param time if null, won't change the current time, else, change it
+     * @param room         if null, won't change the current room, else, change it
+     * @param time         if null, won't change the current time, else, change it
      */
     public static void createMeeting(
         @Nullable final String topic,
@@ -74,7 +77,7 @@ public class CreateMeetingUtils {
     public static void setMeetingRoom(@NonNull Room room) {
         onView(withId(R.id.create_meeting_til_room)).perform(scrollTo(), click());
 
-        onView(withText(room.getStringResName())).inRoot(isPlatformPopup()).perform(scrollTo(), click());
+        onData(is(room)).inRoot(isPlatformPopup()).perform(scrollTo(), click());
     }
 
     public static void setMeetingTime(@NonNull LocalTime time) {

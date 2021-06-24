@@ -63,7 +63,7 @@ public class MeetingActivityTest {
     private static final String FIFTH_TOPIC = "FIFTH_TOPIC";
     private static final String FIFTH_PARTICIPANTS = "count.dracula@hoteltransylvania.travel, mavis.dracula@hoteltransylvania.travel, wayne@woof.yahoo";
     private static final Room FIFTH_ROOM = YOSHI;
-    private static final LocalTime FIFTH_TIME = LocalTime.of(17, 0);
+    private static final LocalTime FIFTH_TIME = LocalTime.of(18, 10);
 
     private MeetingActivity activityRef;
 
@@ -168,6 +168,7 @@ public class MeetingActivityTest {
         HourFilterViewHolderMatcher hour1200FilterViewHolderMatcher = new HourFilterViewHolderMatcher("12:00");
         HourFilterViewHolderMatcher hour1600FilterViewHolderMatcher = new HourFilterViewHolderMatcher("16:00");
         HourFilterViewHolderMatcher hour1700FilterViewHolderMatcher = new HourFilterViewHolderMatcher("17:00");
+        HourFilterViewHolderMatcher hour1800FilterViewHolderMatcher = new HourFilterViewHolderMatcher("18:00");
 
         // Action : display room filter
         onView(withId(R.id.meeting_menu_filter_room)).perform(click());
@@ -431,6 +432,13 @@ public class MeetingActivityTest {
         // Action : Filter on 17:00
         onView(withId(R.id.meeting_rv_hours)).perform(scrollToHolder(hour1700FilterViewHolderMatcher), RecyclerViewActions.actionOnHolderItem(hour1700FilterViewHolderMatcher, click()));
 
+        // Assertions : One PEACH is on the list
+        onView(withId(R.id.meeting_rv)).check(new RecyclerViewItemCountAssertion(1));
+        assertStateForItem(0, SECOND_TOPIC, SECOND_PARTICIPANTS, SECOND_ROOM, SECOND_TIME);
+
+        // Action : Filter on 18:00
+        onView(withId(R.id.meeting_rv_hours)).perform(scrollToHolder(hour1800FilterViewHolderMatcher), RecyclerViewActions.actionOnHolderItem(hour1800FilterViewHolderMatcher, click()));
+
         // Assertions : One PEACH and YOSHI are on the list
         onView(withId(R.id.meeting_rv)).check(new RecyclerViewItemCountAssertion(2));
         assertStateForItem(0, SECOND_TOPIC, SECOND_PARTICIPANTS, SECOND_ROOM, SECOND_TIME);
@@ -486,9 +494,10 @@ public class MeetingActivityTest {
         // Assertions : No one is on the list
         onView(withId(R.id.meeting_rv)).check(new RecyclerViewItemCountAssertion(0));
 
-        // Action : Remove 16:00 and 17:00 filter
+        // Action : Remove all filters
         onView(withId(R.id.meeting_rv_hours)).perform(scrollToHolder(hour1600FilterViewHolderMatcher), RecyclerViewActions.actionOnHolderItem(hour1600FilterViewHolderMatcher, click()));
         onView(withId(R.id.meeting_rv_hours)).perform(scrollToHolder(hour1700FilterViewHolderMatcher), RecyclerViewActions.actionOnHolderItem(hour1700FilterViewHolderMatcher, click()));
+        onView(withId(R.id.meeting_rv_hours)).perform(scrollToHolder(hour1800FilterViewHolderMatcher), RecyclerViewActions.actionOnHolderItem(hour1800FilterViewHolderMatcher, click()));
 
         // Assertions : MARIO is alone on the list
         onView(withId(R.id.meeting_rv)).check(new RecyclerViewItemCountAssertion(1));
