@@ -61,6 +61,38 @@ dependencies {
     androidTestUtil 'androidx.test:orchestrator:1.4.0-rc01'
 }
 
+
+// prints detailed depreciation warning during compilation
+tasks.withType(JavaCompile) {
+    options.compilerArgs += ['-Xlint:deprecation']
+    options.compilerArgs += ['-Xlint:unchecked']
+}
+
+// open JaCoCo report after generation
+def openReport(htmlOutDir) {
+    final reportPath = "$htmlOutDir\\index.html"
+
+    println "HTML Report: $reportPath"
+
+    def os = org.gradle.internal.os.OperatingSystem.current()
+    if (os.isWindows()) {
+        exec { commandLine 'cmd', '/c', "start $reportPath" }
+    } else if (os.isMacOsX()) {
+        exec { commandLine 'open', "$reportPath" }
+    } else if (os.isLinux()) {
+        try {
+            exec { commandLine 'xdg-open', "$reportPath" }
+        } catch (Exception ignored) {
+            if (localProperties.containsKey("linux-html-cmd")) {
+                exec { commandLine properties.get("linux-html-cmd"), "$reportPath" }
+            } else {
+                println "'linux-html-cmd' property could not be found in 'local.properties'"
+            }
+        }
+    }
+}
+
+// JaCoCo stuff
 android.applicationVariants.all { variant ->
     def variantName = variant.name.capitalize()
     def filesToAnalyze = [
@@ -72,11 +104,16 @@ android.applicationVariants.all { variant ->
         group 'Reporting'
         description "Generate ${variantName} Jacoco coverage reports."
 
+        def htmlOutDir = layout.buildDirectory.dir("reports/jacoco/$name/html").get().asFile
+
+        doLast {
+            openReport htmlOutDir
+        }
+
         reports {
             xml.enabled = true
             html {
-                enabled = true
-                destination file("${buildDir}/reports/jacoco")
+                destination htmlOutDir
             }
         }
 
