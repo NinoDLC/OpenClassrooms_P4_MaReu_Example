@@ -20,3 +20,7 @@
  * Tests unitaires (TU) avec des `LiveData` et `ViewModels` (grâce à `Mockito`)
  * Code Coverage à 97% (`JaCoCo`)
  * Tests d'intégration poussés avec `Espresso`
+
+# Commandes utiles :
+`./gradlew jacocoDebugReport` pour générer le rapport de tests unitaires
+`./gradlew connectedDebugAndroidTest` pour lancer les tests d'intégration (avec un émulateur lancé ou device branché)
