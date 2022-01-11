@@ -84,12 +84,12 @@ public class MeetingDetailViewModelTest {
     }
 
     @Test
-    public void given_meeting_is_in_10_minutes() throws InterruptedException {
+    public void given_meeting_is_in_10_minutes() {
         // Given
         viewModel.init(0);
 
         // When
-        MeetingDetailViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingDetailViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         assertEquals(
@@ -99,13 +99,13 @@ public class MeetingDetailViewModelTest {
     }
 
     @Test
-    public void given_meeting_is_in_2_hours() throws InterruptedException {
+    public void given_meeting_is_in_2_hours() {
         // Given
         meetingsMutableLiveData.setValue(getDefaultMeetings(LocalTime.of(15, 0), getDefaultParticipantsAsString()));
         viewModel.init(0);
 
         // When
-        MeetingDetailViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingDetailViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         assertEquals(
@@ -115,13 +115,13 @@ public class MeetingDetailViewModelTest {
     }
 
     @Test
-    public void given_meeting_is_finished() throws InterruptedException {
+    public void given_meeting_is_finished() {
         // Given
         meetingsMutableLiveData.setValue(getDefaultMeetings(LocalTime.of(11, 0), getDefaultParticipantsAsString()));
         viewModel.init(0);
 
         // When
-        MeetingDetailViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingDetailViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         assertEquals(
@@ -131,13 +131,13 @@ public class MeetingDetailViewModelTest {
     }
 
     @Test
-    public void given_meeting_is_ongoing() throws InterruptedException {
+    public void given_meeting_is_ongoing() {
         // Given
         meetingsMutableLiveData.setValue(getDefaultMeetings(LocalTime.of(12, 0), getDefaultParticipantsAsString()));
         viewModel.init(0);
 
         // When
-        MeetingDetailViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingDetailViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         assertEquals(
@@ -147,13 +147,13 @@ public class MeetingDetailViewModelTest {
     }
 
     @Test
-    public void given_email_is_malformed() throws InterruptedException {
+    public void given_email_is_malformed() {
         // Given
         meetingsMutableLiveData.setValue(getDefaultMeetings(getDefaultTime(), Collections.singletonList("NinoEmailWithoutAtSign")));
         viewModel.init(0);
 
         // When
-        MeetingDetailViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingDetailViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         assertEquals(
@@ -197,12 +197,12 @@ public class MeetingDetailViewModelTest {
     }
 
     @Test
-    public void given_participant_is_clicked() throws InterruptedException {
+    public void given_participant_is_clicked() {
         // Given
         viewModel.onParticipantClicked(new MeetingDetailViewState.Participant("name", "participantUrl"));
 
         // When
-        MeetingDetailViewModel.MeetingDetailViewAction result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewActionSingleLiveEvent());
+        MeetingDetailViewModel.MeetingDetailViewAction result = LiveDataTestUtils.getValueForTesting(viewModel.getViewActionSingleLiveEvent());
 
         // Then
         assertTrue(result instanceof MeetingDetailViewModel.MeetingDetailViewAction.LaunchIntent);

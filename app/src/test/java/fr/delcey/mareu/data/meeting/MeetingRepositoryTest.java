@@ -29,7 +29,7 @@ public class MeetingRepositoryTest {
     }
 
     @Test
-    public void shouldAddMeeting() throws InterruptedException {
+    public void shouldAddMeeting() {
         // Given
         String meetingTopic = getTopic(0);
         LocalTime time = getTime();
@@ -43,7 +43,7 @@ public class MeetingRepositoryTest {
             meetingParticipants,
             room
         );
-        List<Meeting> results = LiveDataTestUtils.getOrAwaitValue(meetingRepository.getMeetingsLiveData());
+        List<Meeting> results = LiveDataTestUtils.getValueForTesting(meetingRepository.getMeetingsLiveData());
 
         // Then
         assertEquals(1, results.size());
@@ -59,7 +59,7 @@ public class MeetingRepositoryTest {
     }
 
     @Test
-    public void shouldAdd2MeetingsAndIncrementId() throws InterruptedException {
+    public void shouldAdd2MeetingsAndIncrementId() {
         // Given
         String meetingTopic0 = getTopic(0);
         LocalTime time0 = getTime();
@@ -84,7 +84,7 @@ public class MeetingRepositoryTest {
             meetingParticipants1,
             room1
         );
-        List<Meeting> results = LiveDataTestUtils.getOrAwaitValue(meetingRepository.getMeetingsLiveData());
+        List<Meeting> results = LiveDataTestUtils.getValueForTesting(meetingRepository.getMeetingsLiveData());
 
         // Then
         assertEquals(2, results.size());
@@ -109,7 +109,7 @@ public class MeetingRepositoryTest {
     }
 
     @Test
-    public void shouldRemoveMeeting() throws InterruptedException {
+    public void shouldRemoveMeeting() {
         // Given
         String meetingTopic0 = getTopic(0);
         LocalTime time0 = getTime();
@@ -124,24 +124,24 @@ public class MeetingRepositoryTest {
             room0
         );
         meetingRepository.deleteMeeting(0);
-        List<Meeting> results = LiveDataTestUtils.getOrAwaitValue(meetingRepository.getMeetingsLiveData());
+        List<Meeting> results = LiveDataTestUtils.getValueForTesting(meetingRepository.getMeetingsLiveData());
 
         // Then
         assertEquals(0, results.size());
     }
 
     @Test
-    public void shouldRemoveMeetingEvenIfListIsEmpty() throws InterruptedException {
+    public void shouldRemoveMeetingEvenIfListIsEmpty() {
         // When
         meetingRepository.deleteMeeting(0);
-        List<Meeting> results = LiveDataTestUtils.getOrAwaitValue(meetingRepository.getMeetingsLiveData());
+        List<Meeting> results = LiveDataTestUtils.getValueForTesting(meetingRepository.getMeetingsLiveData());
 
         // Then
         assertEquals(0, results.size());
     }
 
     @Test
-    public void dontRemoveUnexistingMeeting() throws InterruptedException {
+    public void dontRemoveUnexistingMeeting() {
         // Given
         String meetingTopic0 = getTopic(0);
         LocalTime time0 = getTime();
@@ -156,14 +156,14 @@ public class MeetingRepositoryTest {
             room0
         );
         meetingRepository.deleteMeeting(666);
-        List<Meeting> results = LiveDataTestUtils.getOrAwaitValue(meetingRepository.getMeetingsLiveData());
+        List<Meeting> results = LiveDataTestUtils.getValueForTesting(meetingRepository.getMeetingsLiveData());
 
         // Then
         assertEquals(1, results.size());
     }
 
     @Test
-    public void shouldAddMeetingWithIncrementIdAfterDelete() throws InterruptedException {
+    public void shouldAddMeetingWithIncrementIdAfterDelete() {
         // Given
         String meetingTopic0 = getTopic(0);
         LocalTime time0 = getTime();
@@ -189,7 +189,7 @@ public class MeetingRepositoryTest {
             meetingParticipants1,
             room1
         );
-        List<Meeting> results = LiveDataTestUtils.getOrAwaitValue(meetingRepository.getMeetingsLiveData());
+        List<Meeting> results = LiveDataTestUtils.getValueForTesting(meetingRepository.getMeetingsLiveData());
 
         // Then
         assertEquals(1, results.size());

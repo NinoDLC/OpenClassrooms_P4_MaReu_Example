@@ -98,34 +98,34 @@ public class MeetingViewModelTest {
 
     // Nominal test, just to check if everything is working correctly in nominal state
     @Test
-    public void nominal_case_given_repository_has_4_meetings_livedata_should_expose_nominal_state() throws InterruptedException {
+    public void nominal_case_given_repository_has_4_meetings_livedata_should_expose_nominal_state() {
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         assertNominalState(result);
     }
 
     @Test
-    public void initial_state_no_meetings() throws InterruptedException {
+    public void initial_state_no_meetings() {
         // Given
         meetingsMutableLiveData.setValue(null);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         assertTrue(result.getMeetingViewStateItems().isEmpty());
     }
 
     @Test
-    public void initial_state_no_meetings_bis() throws InterruptedException {
+    public void initial_state_no_meetings_bis() {
         // Given
         meetingsMutableLiveData.setValue(get4Meetings());
         meetingsMutableLiveData.setValue(new ArrayList<>());
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         assertTrue(result.getMeetingViewStateItems().isEmpty());
@@ -136,12 +136,12 @@ public class MeetingViewModelTest {
      *   HOURS   *
      *********** */
     @Test
-    public void given_1_hour_is_selected_livedata_should_expose_1_meeting() throws InterruptedException {
+    public void given_1_hour_is_selected_livedata_should_expose_1_meeting() {
         // Given
         viewModel.onHourSelected(LocalTime.of(18, 0));
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -167,12 +167,12 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_1_hour_is_selected_livedata_should_expose_1_meeting_bis() throws InterruptedException {
+    public void given_1_hour_is_selected_livedata_should_expose_1_meeting_bis() {
         // Given
         viewModel.onHourSelected(LocalTime.of(14, 0));
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -198,12 +198,12 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_1_hour_is_selected_livedata_should_expose_2_meetings() throws InterruptedException {
+    public void given_1_hour_is_selected_livedata_should_expose_2_meetings() {
         // Given
         viewModel.onHourSelected(LocalTime.of(13, 0));
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -215,13 +215,13 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_2_hours_are_selected_livedata_should_expose_2_meetings() throws InterruptedException {
+    public void given_2_hours_are_selected_livedata_should_expose_2_meetings() {
         // Given
         viewModel.onHourSelected(LocalTime.of(18, 0));
         viewModel.onHourSelected(LocalTime.of(14, 0));
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -257,14 +257,14 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_2_hours_then_only_one_hour_is_selected_livedata_should_expose_1_meeting() throws InterruptedException {
+    public void given_2_hours_then_only_one_hour_is_selected_livedata_should_expose_1_meeting() {
         // Given
         viewModel.onHourSelected(LocalTime.of(18, 0));
         viewModel.onHourSelected(LocalTime.of(14, 0));
         viewModel.onHourSelected(LocalTime.of(14, 0));
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -290,7 +290,7 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_2_hours_then_no_hour_are_selected_livedata_should_expose_nominal_state() throws InterruptedException {
+    public void given_2_hours_then_no_hour_are_selected_livedata_should_expose_nominal_state() {
         // Given
         viewModel.onHourSelected(LocalTime.of(18, 0));
         viewModel.onHourSelected(LocalTime.of(14, 0));
@@ -298,19 +298,19 @@ public class MeetingViewModelTest {
         viewModel.onHourSelected(LocalTime.of(18, 0));
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         assertNominalState(result);
     }
 
     @Test
-    public void given_filter_hour_on_0_meeting_then_livedata_should_expose_0_meeting() throws InterruptedException {
+    public void given_filter_hour_on_0_meeting_then_livedata_should_expose_0_meeting() {
         // Given
         viewModel.onHourSelected(LocalTime.of(8, 0));
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -335,13 +335,13 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_filter_hour_on_0_meeting_then_livedata_should_expose_0_meeting_bis() throws InterruptedException {
+    public void given_filter_hour_on_0_meeting_then_livedata_should_expose_0_meeting_bis() {
         // Given
         viewModel.onHourSelected(LocalTime.of(8, 0));
         viewModel.onHourSelected(LocalTime.of(9, 0));
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -375,14 +375,14 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_filter_hour_on_0_meeting_then_livedata_should_expose_0_meeting_thrice() throws InterruptedException {
+    public void given_filter_hour_on_0_meeting_then_livedata_should_expose_0_meeting_thrice() {
         // Given
         viewModel.onHourSelected(LocalTime.of(8, 0));
         viewModel.onHourSelected(LocalTime.of(9, 0));
         viewModel.onHourSelected(LocalTime.of(10, 0));
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -429,12 +429,12 @@ public class MeetingViewModelTest {
      *   ROOM   *
      ********** */
     @Test
-    public void given_1_room_is_selected_livedata_should_expose_1_meeting() throws InterruptedException {
+    public void given_1_room_is_selected_livedata_should_expose_1_meeting() {
         // Given
         viewModel.onRoomSelected(Room.MEWTWO);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -445,12 +445,12 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_1_room_is_selected_livedata_should_expose_1_meeting_bis() throws InterruptedException {
+    public void given_1_room_is_selected_livedata_should_expose_1_meeting_bis() {
         // Given
         viewModel.onRoomSelected(Room.PEACH);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -461,12 +461,12 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_1_room_is_selected_livedata_should_expose_2_meetings() throws InterruptedException {
+    public void given_1_room_is_selected_livedata_should_expose_2_meetings() {
         // Given
         viewModel.onRoomSelected(Room.DK);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -478,13 +478,13 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_2_rooms_are_selected_livedata_should_expose_2_meetings() throws InterruptedException {
+    public void given_2_rooms_are_selected_livedata_should_expose_2_meetings() {
         // Given
         viewModel.onRoomSelected(Room.PEACH);
         viewModel.onRoomSelected(Room.MEWTWO);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -496,14 +496,14 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_2_rooms_then_only_one_room_is_selected_livedata_should_expose_1_meeting() throws InterruptedException {
+    public void given_2_rooms_then_only_one_room_is_selected_livedata_should_expose_1_meeting() {
         // Given
         viewModel.onRoomSelected(Room.PEACH);
         viewModel.onRoomSelected(Room.MEWTWO);
         viewModel.onRoomSelected(Room.PEACH);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -514,7 +514,7 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_2_rooms_then_no_room_are_selected_livedata_should_expose_4_meetings() throws InterruptedException {
+    public void given_2_rooms_then_no_room_are_selected_livedata_should_expose_4_meetings() {
         // Given
         viewModel.onRoomSelected(Room.MEWTWO);
         viewModel.onRoomSelected(Room.PEACH);
@@ -522,7 +522,7 @@ public class MeetingViewModelTest {
         viewModel.onRoomSelected(Room.PEACH);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -536,12 +536,12 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_filter_room_on_0_meeting_then_livedata_should_expose_0_meeting() throws InterruptedException {
+    public void given_filter_room_on_0_meeting_then_livedata_should_expose_0_meeting() {
         // Given
         viewModel.onRoomSelected(Room.LINK);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -550,13 +550,13 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_filter_room_on_0_meeting_then_livedata_should_expose_0_meeting_bis() throws InterruptedException {
+    public void given_filter_room_on_0_meeting_then_livedata_should_expose_0_meeting_bis() {
         // Given
         viewModel.onRoomSelected(Room.LINK);
         viewModel.onRoomSelected(Room.LUIGI);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -565,14 +565,14 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_filter_room_on_0_meeting_then_livedata_should_expose_0_meeting_thrice() throws InterruptedException {
+    public void given_filter_room_on_0_meeting_then_livedata_should_expose_0_meeting_thrice() {
         // Given
         viewModel.onRoomSelected(Room.LINK);
         viewModel.onRoomSelected(Room.LUIGI);
         viewModel.onRoomSelected(Room.LINK);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -587,12 +587,12 @@ public class MeetingViewModelTest {
      ************** */
 
     @Test
-    public void given_sorting_is_alphabetical_livedata_should_expose_4_meetings_sorted() throws InterruptedException {
+    public void given_sorting_is_alphabetical_livedata_should_expose_4_meetings_sorted() {
         // Given
         alphabeticalSortingTypeMutableLiveData.setValue(AlphabeticalSortingType.AZ);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -606,12 +606,12 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_sorting_is_inverse_alphabetical_livedata_should_expose_4_meetings_sorted() throws InterruptedException {
+    public void given_sorting_is_inverse_alphabetical_livedata_should_expose_4_meetings_sorted() {
         // Given
         alphabeticalSortingTypeMutableLiveData.setValue(AlphabeticalSortingType.ZA);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -625,12 +625,12 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_sorting_is_none_alphabetical_livedata_should_expose_4_meetings() throws InterruptedException {
+    public void given_sorting_is_none_alphabetical_livedata_should_expose_4_meetings() {
         // Given
         alphabeticalSortingTypeMutableLiveData.setValue(AlphabeticalSortingType.NONE);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         assertNominalState(result);
@@ -640,12 +640,12 @@ public class MeetingViewModelTest {
      * CHRONOLOGICAL *
      *************** */
     @Test
-    public void given_sorting_is_chronological_livedata_should_expose_4_meetings_sorted() throws InterruptedException {
+    public void given_sorting_is_chronological_livedata_should_expose_4_meetings_sorted() {
         // Given
         chronologicalSortingTypeMutableLiveData.setValue(ChronologicalSortingType.OLDEST_FIRST);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -659,12 +659,12 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_sorting_is_inverse_chronological_livedata_should_expose_4_meetings_sorted() throws InterruptedException {
+    public void given_sorting_is_inverse_chronological_livedata_should_expose_4_meetings_sorted() {
         // Given
         chronologicalSortingTypeMutableLiveData.setValue(ChronologicalSortingType.NEWEST_FIRST);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -678,12 +678,12 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_sorting_is_none_chronological_livedata_should_expose_4_meetings_sorted() throws InterruptedException {
+    public void given_sorting_is_none_chronological_livedata_should_expose_4_meetings_sorted() {
         // Given
         chronologicalSortingTypeMutableLiveData.setValue(ChronologicalSortingType.NONE);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         assertNominalState(result);
@@ -693,13 +693,13 @@ public class MeetingViewModelTest {
      *     BOTH      *
      *************** */
     @Test
-    public void given_sorting_is_alphabetical_and_chronological_livedata_should_expose_4_meetings_sorted() throws InterruptedException {
+    public void given_sorting_is_alphabetical_and_chronological_livedata_should_expose_4_meetings_sorted() {
         // Given
         alphabeticalSortingTypeMutableLiveData.setValue(AlphabeticalSortingType.AZ);
         chronologicalSortingTypeMutableLiveData.setValue(ChronologicalSortingType.OLDEST_FIRST);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -714,13 +714,13 @@ public class MeetingViewModelTest {
     // endregion
 
     @Test
-    public void given_filters_then_livedata_should_expose_1_meeting() throws InterruptedException {
+    public void given_filters_then_livedata_should_expose_1_meeting() {
         // Given
         viewModel.onRoomSelected(Room.DK);
         viewModel.onHourSelected(LocalTime.of(18, 0));
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -731,13 +731,13 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_filter_and_sorting_then_livedata_should_expose_2_meetings() throws InterruptedException {
+    public void given_filter_and_sorting_then_livedata_should_expose_2_meetings() {
         // Given
         alphabeticalSortingTypeMutableLiveData.setValue(AlphabeticalSortingType.AZ);
         viewModel.onRoomSelected(Room.DK);
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -749,7 +749,7 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_filters_and_sorting_then_livedata_should_expose_2_meeting() throws InterruptedException {
+    public void given_filters_and_sorting_then_livedata_should_expose_2_meeting() {
         // Given
         chronologicalSortingTypeMutableLiveData.setValue(ChronologicalSortingType.OLDEST_FIRST);
         viewModel.onRoomSelected(Room.DK);
@@ -757,7 +757,7 @@ public class MeetingViewModelTest {
         viewModel.onHourSelected(LocalTime.of(13, 0));
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -769,7 +769,7 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void given_filters_and_sorting_inverted_then_livedata_should_expose_2_meeting() throws InterruptedException {
+    public void given_filters_and_sorting_inverted_then_livedata_should_expose_2_meeting() {
         // Given
         chronologicalSortingTypeMutableLiveData.setValue(ChronologicalSortingType.NEWEST_FIRST);
         viewModel.onRoomSelected(Room.DK);
@@ -777,7 +777,7 @@ public class MeetingViewModelTest {
         viewModel.onHourSelected(LocalTime.of(13, 0));
 
         // When
-        MeetingViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        MeetingViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         List<MeetingViewStateItem> results = result.getMeetingViewStateItems();
@@ -813,12 +813,12 @@ public class MeetingViewModelTest {
     }
 
     @Test
-    public void verify_viewaction() throws InterruptedException {
+    public void verify_viewaction() {
         // Given
         viewModel.onDisplaySortingButtonClicked();
 
         // When
-        MeetingViewAction result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewActionSingleLiveEvent());
+        MeetingViewAction result = LiveDataTestUtils.getValueForTesting(viewModel.getViewActionSingleLiveEvent());
 
         // Then
         assertEquals(MeetingViewAction.DISPLAY_SORTING_DIALOG, result);

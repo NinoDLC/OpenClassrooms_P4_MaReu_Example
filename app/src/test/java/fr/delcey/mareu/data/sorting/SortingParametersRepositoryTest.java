@@ -25,12 +25,12 @@ public class SortingParametersRepositoryTest {
     }
 
     @Test
-    public void initial_state() throws InterruptedException {
+    public void initial_state() {
         // When
-        AlphabeticalSortingType alphabeticalSortingType = LiveDataTestUtils.getOrAwaitValue(
+        AlphabeticalSortingType alphabeticalSortingType = LiveDataTestUtils.getValueForTesting(
             sortingParametersRepository.getAlphabeticalSortingTypeLiveData()
         );
-        ChronologicalSortingType chronologicalSortingType = LiveDataTestUtils.getOrAwaitValue(
+        ChronologicalSortingType chronologicalSortingType = LiveDataTestUtils.getValueForTesting(
             sortingParametersRepository.getChronologicalSortingTypeLiveData()
         );
 
@@ -40,12 +40,12 @@ public class SortingParametersRepositoryTest {
     }
 
     @Test
-    public void changeAlphabeticalSortingType() throws InterruptedException {
+    public void changeAlphabeticalSortingType() {
         // Given
         sortingParametersRepository.changeAlphabeticalSorting();
 
         // When
-        AlphabeticalSortingType alphabeticalSortingType = LiveDataTestUtils.getOrAwaitValue(
+        AlphabeticalSortingType alphabeticalSortingType = LiveDataTestUtils.getValueForTesting(
             sortingParametersRepository.getAlphabeticalSortingTypeLiveData()
         );
 
@@ -54,13 +54,13 @@ public class SortingParametersRepositoryTest {
     }
 
     @Test
-    public void changeAlphabeticalSortingTypeTwice() throws InterruptedException {
+    public void changeAlphabeticalSortingTypeTwice() {
         // Given
         sortingParametersRepository.changeAlphabeticalSorting();
         sortingParametersRepository.changeAlphabeticalSorting();
 
         // When
-        AlphabeticalSortingType alphabeticalSortingType = LiveDataTestUtils.getOrAwaitValue(
+        AlphabeticalSortingType alphabeticalSortingType = LiveDataTestUtils.getValueForTesting(
             sortingParametersRepository.getAlphabeticalSortingTypeLiveData()
         );
 
@@ -69,14 +69,14 @@ public class SortingParametersRepositoryTest {
     }
 
     @Test
-    public void changeAlphabeticalSortingTypeThrice() throws InterruptedException {
+    public void changeAlphabeticalSortingTypeThrice() {
         // Given
         sortingParametersRepository.changeAlphabeticalSorting();
         sortingParametersRepository.changeAlphabeticalSorting();
         sortingParametersRepository.changeAlphabeticalSorting();
 
         // When
-        AlphabeticalSortingType alphabeticalSortingType = LiveDataTestUtils.getOrAwaitValue(
+        AlphabeticalSortingType alphabeticalSortingType = LiveDataTestUtils.getValueForTesting(
             sortingParametersRepository.getAlphabeticalSortingTypeLiveData()
         );
 
@@ -86,12 +86,12 @@ public class SortingParametersRepositoryTest {
 
 
     @Test
-    public void changeChronologicalSortingType() throws InterruptedException {
+    public void changeChronologicalSortingType() {
         // Given
         sortingParametersRepository.changeChronologicalSorting();
 
         // When
-        ChronologicalSortingType chronologicalSortingType = LiveDataTestUtils.getOrAwaitValue(
+        ChronologicalSortingType chronologicalSortingType = LiveDataTestUtils.getValueForTesting(
             sortingParametersRepository.getChronologicalSortingTypeLiveData()
         );
 
@@ -100,13 +100,13 @@ public class SortingParametersRepositoryTest {
     }
 
     @Test
-    public void changeChronologicalSortingTypeTwice() throws InterruptedException {
+    public void changeChronologicalSortingTypeTwice() {
         // Given
         sortingParametersRepository.changeChronologicalSorting();
         sortingParametersRepository.changeChronologicalSorting();
 
         // When
-        ChronologicalSortingType chronologicalSortingType = LiveDataTestUtils.getOrAwaitValue(
+        ChronologicalSortingType chronologicalSortingType = LiveDataTestUtils.getValueForTesting(
             sortingParametersRepository.getChronologicalSortingTypeLiveData()
         );
 
@@ -115,14 +115,14 @@ public class SortingParametersRepositoryTest {
     }
 
     @Test
-    public void changeChronologicalSortingTypeThrice() throws InterruptedException {
+    public void changeChronologicalSortingTypeThrice() {
         // Given
         sortingParametersRepository.changeChronologicalSorting();
         sortingParametersRepository.changeChronologicalSorting();
         sortingParametersRepository.changeChronologicalSorting();
 
         // When
-        ChronologicalSortingType chronologicalSortingType = LiveDataTestUtils.getOrAwaitValue(
+        ChronologicalSortingType chronologicalSortingType = LiveDataTestUtils.getValueForTesting(
             sortingParametersRepository.getChronologicalSortingTypeLiveData()
         );
 

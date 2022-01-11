@@ -67,13 +67,13 @@ public class SortViewModelParameterizedTest {
     }
 
     @Test
-    public void test() throws InterruptedException {
+    public void test() {
         // Given
         alphabeticalSortingTypeMutableLiveData.setValue(alphabeticalSortingType);
         chronologicalSortingTypeMutableLiveData.setValue(chronologicalSortingType);
 
         // When
-        SortViewState result = LiveDataTestUtils.getOrAwaitValue(viewModel.getViewStateLiveData());
+        SortViewState result = LiveDataTestUtils.getValueForTesting(viewModel.getViewStateLiveData());
 
         // Then
         assertEquals(
