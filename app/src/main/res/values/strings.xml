@@ -10,7 +10,7 @@
     <string name="dk">D.K.</string>
     <string name="mewtwo">Mewtwo</string>
 
-    <string name="meeting_title">%s - %s - %s</string>
+    <string name="meeting_title">%1$s - %2$s - %3$s</string>
     <string name="content_description_delete">Delete</string>
     <string name="room">Room</string>
     <string name="time">Time</string>
