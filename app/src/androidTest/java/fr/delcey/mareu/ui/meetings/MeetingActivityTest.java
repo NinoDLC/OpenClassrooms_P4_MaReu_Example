@@ -8,6 +8,7 @@ import androidx.test.filters.LargeTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -78,6 +79,7 @@ public class MeetingActivityTest {
         activityRef = null;
     }
 
+    @Ignore
     @Test
     public void createMultipleMeetingsWithFilteringAndSorting() throws InterruptedException {
 
@@ -565,7 +567,7 @@ public class MeetingActivityTest {
             new RecyclerViewItemAssertion(
                 positionOnRecyclerView,
                 R.id.meeting_item_tv_topic,
-                withText(topic + " - " + time.toString() + " - " + activityRef.getString(room.getStringResName()))
+                withText(topic + " - " + time + " - " + activityRef.getString(room.getStringResName()))
             )
         );
         onView(withId(R.id.meeting_rv)).check(

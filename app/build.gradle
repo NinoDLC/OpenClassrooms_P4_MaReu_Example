@@ -14,8 +14,8 @@ android {
         versionName '1.0'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
         testInstrumentationRunnerArguments clearPackageData: 'true'
+        testInstrumentationRunnerArguments useTestStorageService: 'true'
     }
 
     testOptions {
@@ -34,9 +34,18 @@ android {
     }
 
     buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    tasks.withType(Test) {
+        jacoco {
+            includeNoLocationClasses = true
+            excludes = ['jdk.internal.*']
         }
     }
 }
@@ -64,6 +73,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     androidTestUtil 'androidx.test:orchestrator:1.4.1'
+    androidTestUtil 'androidx.test.services:test-services:1.4.1'
+    debugImplementation 'androidx.fragment:fragment-testing:1.5.3'
 }
 
 // prints detailed depreciation warning during compilation
@@ -96,17 +107,16 @@ def openReport(htmlOutDir) {
     }
 }
 
-// JaCoCo stuff
+// Configure JaCoCo
 android.applicationVariants.all { variant ->
-    def variantName = variant.name.capitalize()
-    def filesToAnalyze = [
-            '**/*ViewModel.class',
-            '**/*Repository.class'
-    ]
-
-    task("jacoco${variantName}Report", type: JacocoReport, dependsOn: "test${variantName}UnitTest") {
+    def capitalizedVariantName = variant.name.capitalize()
+    task(
+        "jacoco${capitalizedVariantName}Report",
+        type: JacocoReport,
+        dependsOn: ["test${capitalizedVariantName}UnitTest", "create${capitalizedVariantName}CoverageReport"]
+    ) {
         group 'Reporting'
-        description "Generate ${variantName} Jacoco coverage reports."
+        description "Generate ${capitalizedVariantName} Jacoco coverage reports."
 
         def htmlOutDir = layout.buildDirectory.dir("reports/jacoco/$name/html").get().asFile
 
@@ -115,14 +125,30 @@ android.applicationVariants.all { variant ->
         }
 
         reports {
-            xml.enabled = true
+            xml.getRequired().set(true)
             html {
+                getRequired().set(true)
                 destination htmlOutDir
             }
         }
 
+        def fileFilter = [
+            '**/R.class',
+            '**/R$*.class',
+            '**/BuildConfig.*',
+            '**/Manifest*.*',
+            '**/*Test*.*',
+            'android/**/*.*'
+        ]
+
         getSourceDirectories().setFrom(files(android.sourceSets.main.java.srcDirs))
-        getExecutionData().setFrom(files("${buildDir}/jacoco/test${variantName}UnitTest.exec"))
-        getClassDirectories().setFrom(fileTree(dir: variant.javaCompiler.destinationDir, includes: filesToAnalyze))
+        getClassDirectories().setFrom(fileTree(dir: variant.javaCompiler.destinationDir, excludes: fileFilter))
+        getExecutionData().setFrom(fileTree(
+            dir: "$buildDir",
+            includes: [
+                "outputs/unit_test_code_coverage/debugUnitTest/test${capitalizedVariantName}UnitTest.exec",
+                "outputs/code_coverage/${variant.name}AndroidTest/connected/**/*.ec"
+            ]
+        ))
     }
 }
